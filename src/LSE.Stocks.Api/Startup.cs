@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using LSE.Stocks.Application.ServiceCollectionExtensions;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -6,7 +7,7 @@ using Microsoft.Extensions.Hosting;
 
 namespace LSE.Stocks.Api
 {
-    internal class Startup
+    public class Startup
     {
         public IConfiguration Configuration { get; }
 
@@ -17,6 +18,7 @@ namespace LSE.Stocks.Api
             services.AddControllers();
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen();
+            services.AddApplicationServices();
         }
 
         public static void Configure(IApplicationBuilder app, IWebHostEnvironment env)
