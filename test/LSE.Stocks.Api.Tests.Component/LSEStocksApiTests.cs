@@ -27,9 +27,9 @@ namespace LSE.Stocks.Api.Tests.Component
 
             var shareExchangeRequest = new SaveShareExchangeRequest(tickerSymbol, price, count, brokerId);
             var response = await PostShareExchangeAsync(mockShareExchangeRepository.Object, shareExchangeRequest);
-            
+
             AssertShareExchangeSaved(mockShareExchangeRepository, shareExchangeRequest);
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            AssertOk(response.StatusCode);
         }
 
         private static async Task<HttpResponseMessage> PostShareExchangeAsync(IShareExchangeRepository shareExchangeRepository,
@@ -51,5 +51,7 @@ namespace LSE.Stocks.Api.Tests.Component
         private static ShareExchange MapToShareExchange(SaveShareExchangeRequest saveShareExchangeRequest)
             => new(saveShareExchangeRequest.TickerSymbol, saveShareExchangeRequest.Price,
                 saveShareExchangeRequest.Count, saveShareExchangeRequest.BrokerId);
+
+        private static void AssertOk(HttpStatusCode httpStatusCode) => Assert.Equal(HttpStatusCode.OK, httpStatusCode);
     }
 }
