@@ -17,30 +17,39 @@ namespace LSE.Stocks.Api.Tests.Component
     {
         private const string _shareExchangeApiRoute = "shareexchange";
 
-        [Fact]
-        public async Task GivenValidShareExchange_WhenPostEndpointCalled_ThenSavesShareExchangeAndReturnsOK()
+        [Theory]
+        [InlineData("NASDAQ:AAPL", 10, 1, "BR10834")]
+        [InlineData("NASDAQ:TSLA", 25.05, 2, "BR00432")]
+        public async Task GivenValidShareExchange_WhenPostEndpointCalled_ThenSavesShareExchangeAndReturnsOK(
+            string tickerSymbol, decimal price, decimal count, string brokerId)
         {
             var mockShareExchangeRepository = new Mock<IShareExchangeRepository>();
-            var client = BuildClient(mockShareExchangeRepository);
 
-            var shareExchangeRequest = new SaveShareExchangeRequest("NSADAQ:AAPL", 10.00m, 1m, Guid.NewGuid().ToString());
-            var response = await client.PostAsync(_shareExchangeApiRoute, BuildHttpContent(shareExchangeRequest));
-
-            mockShareExchangeRepository.Verify(m => m.SaveShareExchangeAsync(MapToShareExchange(shareExchangeRequest)));
+            var shareExchangeRequest = new SaveShareExchangeRequest(tickerSymbol, price, count, brokerId);
+            var response = await PostShareExchangeAsync(mockShareExchangeRepository.Object, shareExchangeRequest);
+            
+            AssertShareExchangeSaved(mockShareExchangeRepository, shareExchangeRequest);
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }
 
-        private static HttpClient BuildClient(Mock<IShareExchangeRepository> mockShareExchangeRepository) 
+        private static async Task<HttpResponseMessage> PostShareExchangeAsync(IShareExchangeRepository shareExchangeRepository,
+            SaveShareExchangeRequest shareExchangeRequest) 
+                => await BuildClient(shareExchangeRepository).PostAsync(_shareExchangeApiRoute, BuildHttpContent(shareExchangeRequest));
+
+        private static HttpClient BuildClient(IShareExchangeRepository shareExchangeRepository) 
             => new WebApplicationFactory<Startup>()
                 .WithWebHostBuilder(b => b.ConfigureServices(services
-                    => ((ServiceCollection)services).AddSingleton(mockShareExchangeRepository.Object)))
+                    => ((ServiceCollection)services).AddSingleton(shareExchangeRepository)))
                         .CreateClient();
+
+        private static StringContent BuildHttpContent(SaveShareExchangeRequest shareExchangeRequest)
+            => new(JsonSerializer.Serialize(shareExchangeRequest), Encoding.UTF8, MediaTypeNames.Application.Json);
+        
+        private static void AssertShareExchangeSaved(Mock<IShareExchangeRepository> mockShareExchangeRepository, SaveShareExchangeRequest shareExchangeRequest)
+            => mockShareExchangeRepository.Verify(m => m.SaveShareExchangeAsync(MapToShareExchange(shareExchangeRequest)));
 
         private static ShareExchange MapToShareExchange(SaveShareExchangeRequest saveShareExchangeRequest)
             => new(saveShareExchangeRequest.TickerSymbol, saveShareExchangeRequest.Price,
                 saveShareExchangeRequest.Count, saveShareExchangeRequest.BrokerId);
-
-        private static StringContent BuildHttpContent(SaveShareExchangeRequest shareExchangeRequest)
-            => new(JsonSerializer.Serialize(shareExchangeRequest), Encoding.UTF8, MediaTypeNames.Application.Json);
     }
 }
