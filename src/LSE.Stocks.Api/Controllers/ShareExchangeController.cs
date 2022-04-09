@@ -1,5 +1,5 @@
 ﻿using LSE.Stocks.Api.Models;
-using LSE.Stocks.Application.ShareExchange.Commands.SaveShareExchange;
+using LSE.Stocks.Application.Services.Shares.Commands.SaveShareExchange;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 

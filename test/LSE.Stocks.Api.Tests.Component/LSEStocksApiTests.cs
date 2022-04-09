@@ -1,5 +1,6 @@
 ﻿using LSE.Stocks.Api.Models;
 using LSE.Stocks.Application.Repositories;
+using LSE.Stocks.Domain.Models.Shares;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
@@ -20,19 +21,24 @@ namespace LSE.Stocks.Api.Tests.Component
         public async Task GivenValidShareExchange_WhenPostEndpointCalled_ThenSavesShareExchangeAndReturnsOK()
         {
             var mockShareExchangeRepository = new Mock<IShareExchangeRepository>();
-            var webApplicationFactory = new WebApplicationFactory<Startup>()
-                .WithWebHostBuilder(b => b.ConfigureServices(services 
-                    => ((ServiceCollection)services).AddSingleton(mockShareExchangeRepository.Object)));
-
-            var client = webApplicationFactory.CreateClient();
+            var client = BuildClient(mockShareExchangeRepository);
 
             var shareExchangeRequest = new SaveShareExchangeRequest("NSADAQ:AAPL", 10.00m, 1m, Guid.NewGuid().ToString());
-
             var response = await client.PostAsync(_shareExchangeApiRoute, BuildHttpContent(shareExchangeRequest));
+
+            mockShareExchangeRepository.Verify(m => m.SaveShareExchangeAsync(MapToShareExchange(shareExchangeRequest)));
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-            mockShareExchangeRepository.Verify(m => m.SaveShareExchangeAsync(shareExchangeRequest.TickerSymbol,
-                shareExchangeRequest.Price, shareExchangeRequest.Count, shareExchangeRequest.BrokerId), Times.Once);
         }
+
+        private static HttpClient BuildClient(Mock<IShareExchangeRepository> mockShareExchangeRepository) 
+            => new WebApplicationFactory<Startup>()
+                .WithWebHostBuilder(b => b.ConfigureServices(services
+                    => ((ServiceCollection)services).AddSingleton(mockShareExchangeRepository.Object)))
+                        .CreateClient();
+
+        private static ShareExchange MapToShareExchange(SaveShareExchangeRequest saveShareExchangeRequest)
+            => new(saveShareExchangeRequest.TickerSymbol, saveShareExchangeRequest.Price,
+                saveShareExchangeRequest.Count, saveShareExchangeRequest.BrokerId);
 
         private static StringContent BuildHttpContent(SaveShareExchangeRequest shareExchangeRequest)
             => new(JsonSerializer.Serialize(shareExchangeRequest), Encoding.UTF8, MediaTypeNames.Application.Json);
