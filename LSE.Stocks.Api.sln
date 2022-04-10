@@ -15,6 +15,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LSE.Stocks.Application", "s
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LSE.Stocks.Domain", "src\LSE.Stocks.Domain\LSE.Stocks.Domain.csproj", "{D7B70B01-D6CD-4D72-8816-DCB05780C835}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LSE.Stocks.Infrastructure", "src\LSE.Stocks.Infrastructure\LSE.Stocks.Infrastructure.csproj", "{638F2A64-ACE8-4811-95A5-253575B5A6E6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -37,6 +39,10 @@ Global
 		{D7B70B01-D6CD-4D72-8816-DCB05780C835}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D7B70B01-D6CD-4D72-8816-DCB05780C835}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D7B70B01-D6CD-4D72-8816-DCB05780C835}.Release|Any CPU.Build.0 = Release|Any CPU
+		{638F2A64-ACE8-4811-95A5-253575B5A6E6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{638F2A64-ACE8-4811-95A5-253575B5A6E6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{638F2A64-ACE8-4811-95A5-253575B5A6E6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{638F2A64-ACE8-4811-95A5-253575B5A6E6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -46,6 +52,7 @@ Global
 		{9E67591A-C9C3-4DB5-A15F-7AB920DFE031} = {A9BE473F-8C55-442F-9944-E94057318509}
 		{EE0BA714-36AF-41CC-BE42-6AD00B43C713} = {DB0D0F4D-89B7-4D3A-8B31-63306838B228}
 		{D7B70B01-D6CD-4D72-8816-DCB05780C835} = {DB0D0F4D-89B7-4D3A-8B31-63306838B228}
+		{638F2A64-ACE8-4811-95A5-253575B5A6E6} = {DB0D0F4D-89B7-4D3A-8B31-63306838B228}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {F8706631-6B0A-4EB9-BEDD-9F4B7296D229}

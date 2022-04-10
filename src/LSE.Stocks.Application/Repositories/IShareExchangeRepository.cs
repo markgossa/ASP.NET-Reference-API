@@ -1,9 +1,8 @@
 ﻿using LSE.Stocks.Domain.Models.Shares;
 
-namespace LSE.Stocks.Application.Repositories
+namespace LSE.Stocks.Application.Repositories;
+
+public interface IShareExchangeRepository
 {
-    public interface IShareExchangeRepository
-    {
-        Task SaveShareExchangeAsync(ShareExchange shareExchange);
-    }
+    Task SaveShareExchangeAsync(ShareExchange shareExchange);
 }
