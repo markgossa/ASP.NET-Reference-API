@@ -17,6 +17,7 @@ public static class ServiceCollectionExtensions
         services.AddMediatR(typeof(SaveTradeCommand));
         services.AddTransient(typeof(IPipelineBehavior<,>), typeof(RequestValidationBehaviour<,>));
         services.AddScoped<ITradeRepository, TradeSqlRepository>();
+        services.AddScoped<ISharePriceRepository, SharePriceSqlRepository>();
 
         return services;
     }
