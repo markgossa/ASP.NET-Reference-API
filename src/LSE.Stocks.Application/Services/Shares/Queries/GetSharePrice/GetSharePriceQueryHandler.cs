@@ -14,14 +14,14 @@ public class GetSharePriceQueryHandler : IRequestHandler<GetSharePriceQuery, Get
 
     public async Task<GetSharePriceQueryResponse> Handle(GetSharePriceQuery request, CancellationToken cancellationToken)
     {
-        var shareExchanges = await _sharePriceRepository.GetShareExchangesAsync(request.TickerSymbol);
+        var trades = await _sharePriceRepository.GetTradesAsync(request.TickerSymbol);
 
-        var averagePrice = CalculateAveragePrice(shareExchanges);
+        var averagePrice = CalculateAveragePrice(trades);
 
         return new GetSharePriceQueryResponse(new SharePrice(request.TickerSymbol, averagePrice));
     }
 
-    private static decimal CalculateAveragePrice(IEnumerable<ShareExchange> prices)
+    private static decimal CalculateAveragePrice(IEnumerable<Trade> prices)
     {
         var count = 0m;
         var total = 0m;

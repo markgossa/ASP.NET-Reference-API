@@ -15,7 +15,7 @@ public class SharePriceController : Controller
     public SharePriceController(IMediator mediator) => _mediator = mediator;
 
     [HttpGet]
-    public async Task<ActionResult<SharePriceResponse>> SaveShareExchange([FromQuery] string tickerSymbol)
+    public async Task<ActionResult<SharePriceResponse>> GetPrice([FromQuery] string tickerSymbol)
     {
         var sharePriceQueryResponse = await _mediator.Send(new GetSharePriceQuery(tickerSymbol));
 

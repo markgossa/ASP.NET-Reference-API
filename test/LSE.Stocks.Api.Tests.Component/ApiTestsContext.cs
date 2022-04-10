@@ -9,7 +9,7 @@ namespace LSE.Stocks.Api.Tests.Component
 {
     public class ApiTestsContext : IDisposable
     {
-        public Mock<IShareExchangeRepository> MockShareExchangeRepository { get; } = new();
+        public Mock<ITradeRepository> MockTradeRepository { get; } = new();
         public HttpClient HttpCleint { get; }
         private readonly Mock<ISharePriceRepository> _mockSharePriceRepository = new();
         private readonly WebApplicationFactory<Startup> _webApplicationFactory;
@@ -23,15 +23,15 @@ namespace LSE.Stocks.Api.Tests.Component
 
         private void SetUpMockSharePricingRepository()
         {
-            _mockSharePriceRepository.Setup(m => m.GetShareExchangesAsync("NASDAQ:AAPL"))
-                 .ReturnsAsync(new List<ShareExchange>()
+            _mockSharePriceRepository.Setup(m => m.GetTradesAsync("NASDAQ:AAPL"))
+                 .ReturnsAsync(new List<Trade>()
                     {
                         new("NASDAQ:AAPL", 10, 2, null),
                         new("NASDAQ:AAPL", 20, 4, null),
                     });
             
-            _mockSharePriceRepository.Setup(m => m.GetShareExchangesAsync("NASDAQ:TSLA"))
-                 .ReturnsAsync(new List<ShareExchange>()
+            _mockSharePriceRepository.Setup(m => m.GetTradesAsync("NASDAQ:TSLA"))
+                 .ReturnsAsync(new List<Trade>()
                     {
                         new("NASDAQ:TSLA", 150, 2, null),
                         new("NASDAQ:TSLA", 300, 4, null)
@@ -42,7 +42,7 @@ namespace LSE.Stocks.Api.Tests.Component
             => new WebApplicationFactory<Startup>()
             .WithWebHostBuilder(b => b.ConfigureServices(services =>
             {
-                ((ServiceCollection)services).AddSingleton(MockShareExchangeRepository.Object);
+                ((ServiceCollection)services).AddSingleton(MockTradeRepository.Object);
                 ((ServiceCollection)services).AddSingleton(_mockSharePriceRepository.Object);
             }));
 

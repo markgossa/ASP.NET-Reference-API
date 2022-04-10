@@ -1,10 +1,10 @@
 ﻿using FluentValidation;
 
-namespace LSE.Stocks.Application.Services.Shares.Commands.SaveShareExchange;
+namespace LSE.Stocks.Application.Services.Shares.Commands.SaveTrade;
 
-public class SaveShareExchangeCommandValidator : AbstractValidator<SaveShareExchangeCommand>
+public class SaveTradeCommandValidator : AbstractValidator<SaveTradeCommand>
 {
-    public SaveShareExchangeCommandValidator()
+    public SaveTradeCommandValidator()
     {
         RuleFor(v => v.TickerSymbol).MaximumLength(20).WithMessage("Ticker Symbol max length: 20");
         RuleFor(v => v.TickerSymbol).NotEmpty().WithMessage("Ticker Symbol cannot be empty");

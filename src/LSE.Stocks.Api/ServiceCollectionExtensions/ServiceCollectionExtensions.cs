@@ -1,7 +1,8 @@
 ﻿using FluentValidation;
 using LSE.Stocks.Application.Common.Behaviours;
 using LSE.Stocks.Application.Repositories;
-using LSE.Stocks.Application.Services.Shares.Commands.SaveShareExchange;
+using LSE.Stocks.Application.Services.Shares.Commands.SaveTrade;
+using LSE.Stocks.Application.Services.Shares.Queries.GetSharePrice;
 using LSE.Stocks.Infrastructure;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
@@ -13,9 +14,9 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection RegisterServices(this IServiceCollection services)
     {
         services.AddValidatorsFromAssembly(typeof(GetSharePriceQueryValidator).Assembly);
-        services.AddMediatR(typeof(SaveShareExchangeCommand));
+        services.AddMediatR(typeof(SaveTradeCommand));
         services.AddTransient(typeof(IPipelineBehavior<,>), typeof(RequestValidationBehaviour<,>));
-        services.AddScoped<IShareExchangeRepository, ShareExchangeRepository>();
+        services.AddScoped<ITradeRepository, TradeSqlRepository>();
 
         return services;
     }

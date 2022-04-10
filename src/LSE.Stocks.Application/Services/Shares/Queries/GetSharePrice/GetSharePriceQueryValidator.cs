@@ -1,7 +1,6 @@
 ﻿using FluentValidation;
-using LSE.Stocks.Application.Services.Shares.Queries.GetSharePrice;
 
-namespace LSE.Stocks.Application.Services.Shares.Commands.SaveShareExchange;
+namespace LSE.Stocks.Application.Services.Shares.Queries.GetSharePrice;
 
 public class GetSharePriceQueryValidator : AbstractValidator<GetSharePriceQuery>
 {
