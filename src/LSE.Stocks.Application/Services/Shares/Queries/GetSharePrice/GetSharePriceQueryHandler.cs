@@ -21,15 +21,15 @@ public class GetSharePriceQueryHandler : IRequestHandler<GetSharePriceQuery, Get
         return new GetSharePriceQueryResponse(new SharePrice(request.TickerSymbol, averagePrice));
     }
 
-    private static decimal CalculateAveragePrice(IEnumerable<Trade> prices)
+    private static decimal CalculateAveragePrice(IEnumerable<Trade> trades)
     {
         var count = 0m;
         var total = 0m;
 
-        foreach (var price in prices)
+        foreach (var trade in trades)
         {
-            count += price.Count;
-            total += price.Price * price.Count;
+            count += trade.Count;
+            total += trade.Price * trade.Count;
         }
 
         ThrowIfNoRecordsFound(count);

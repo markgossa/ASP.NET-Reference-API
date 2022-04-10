@@ -14,10 +14,11 @@ public class Startup
 
     public Startup(IConfiguration configuration) => Configuration = configuration;
 
-    public static void ConfigureServices(IServiceCollection services) 
+    public void ConfigureServices(IServiceCollection services) 
         => services.AddEndpointsApiExplorer()
             .AddSwaggerGen()
-            .RegisterServices()
+            .AddMediatorServices()
+            .AddRepositories(Configuration)
             .AddControllers();
 
     public static void Configure(IApplicationBuilder app, IWebHostEnvironment env)

@@ -34,14 +34,20 @@ Questions:
 * How much data should be stored/any requirements to purge data?
 * Security requirements? (Assumed TLS 1.2, authentication, IP restriction, DDOS protection)
 * Required response time for requests under load?
+* Process for onboarding new brokers and removing old brokers?
+* Authentication for brokers?
+* Providing documentation to brokers?
 
 ## Remaining tasks
 * Add logging using Application Insights. CorrelationId to be logged and stored to database for each Trade.
 * XML comments should be added to requests, responses and controllers to aid clients
 * EditorConfig can be added to ensure code style in line with team requirements
 * Add automated acceptance or automated end-to-end tests. SpecFlow?
-* Integration tests can be added to test that the SQL repositories can communicate with either SQLite in memory databases or actual SQL databases
+* Add integration tests for the SQL repositories (with either SQLite in memory database or actual SQL database)
 * API Versioning and versioned Swagger
+* Create build and release pipelines, infrastructure as code etc
+* Test concurrent connections to SQL have no issues
+* Test using docker file
 
 ## Architectural Decision Records
 
