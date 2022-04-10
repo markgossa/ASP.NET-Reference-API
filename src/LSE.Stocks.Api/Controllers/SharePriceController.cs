@@ -1,5 +1,6 @@
 ﻿using LSE.Stocks.Api.Models;
 using LSE.Stocks.Application.Services.Shares.Queries.GetSharePrice;
+using LSE.Stocks.Domain.Models.Shares;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -16,8 +17,11 @@ public class SharePriceController : Controller
     [HttpGet]
     public async Task<ActionResult<SharePriceResponse>> SaveShareExchange([FromQuery] string tickerSymbol)
     {
-        var response = await _mediator.Send(new GetSharePriceQuery(tickerSymbol));
+        var sharePriceQueryResponse = await _mediator.Send(new GetSharePriceQuery(tickerSymbol));
 
-        return new OkObjectResult(new SharePriceResponse(tickerSymbol, response.Price));
+        return new OkObjectResult(BuildSharePriceQueryResponse(sharePriceQueryResponse.SharePrice));
     }
+
+    private static SharePriceResponse BuildSharePriceQueryResponse(SharePrice sharePrice) 
+        => new (sharePrice.TickerSymbol, sharePrice.Price);
 }

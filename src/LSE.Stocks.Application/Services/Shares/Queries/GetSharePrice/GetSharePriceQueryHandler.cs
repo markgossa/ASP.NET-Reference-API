@@ -9,16 +9,16 @@ public class GetSharePriceQueryHandler : IRequestHandler<GetSharePriceQuery, Get
 {
     private readonly ISharePriceRepository _sharePriceRepository;
 
-    public GetSharePriceQueryHandler(ISharePriceRepository sharePriceRepository) 
+    public GetSharePriceQueryHandler(ISharePriceRepository sharePriceRepository)
         => _sharePriceRepository = sharePriceRepository;
 
     public async Task<GetSharePriceQueryResponse> Handle(GetSharePriceQuery request, CancellationToken cancellationToken)
     {
-        var prices = await _sharePriceRepository.GetShareExchangesAsync(request.TickerSymbol);
+        var shareExchanges = await _sharePriceRepository.GetShareExchangesAsync(request.TickerSymbol);
 
-        var averagePrice = CalculateAveragePrice(prices);
+        var averagePrice = CalculateAveragePrice(shareExchanges);
 
-        return new GetSharePriceQueryResponse(Math.Round(averagePrice, 2));
+        return new GetSharePriceQueryResponse(new SharePrice(request.TickerSymbol, averagePrice));
     }
 
     private static decimal CalculateAveragePrice(IEnumerable<ShareExchange> prices)
@@ -34,7 +34,7 @@ public class GetSharePriceQueryHandler : IRequestHandler<GetSharePriceQuery, Get
 
         ThrowIfNoRecordsFound(count);
 
-        return total / count;
+        return RoundToTwoDecimalPlaces(count, total);
     }
 
     private static void ThrowIfNoRecordsFound(decimal count)
@@ -44,4 +44,7 @@ public class GetSharePriceQueryHandler : IRequestHandler<GetSharePriceQuery, Get
             throw new NotFoundException();
         }
     }
+
+    private static decimal RoundToTwoDecimalPlaces(decimal count, decimal total)
+        => Math.Round(total / count, 2);
 }
