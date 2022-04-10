@@ -20,7 +20,7 @@ namespace LSE.Stocks.Api.Tests.Component
         [Theory]
         [InlineData("NASDAQ:AAPL", 10, 1, "BR10834")]
         [InlineData("NASDAQ:TSLA", 25.05, 2, "BR00432")]
-        public async Task GivenValidShareExchange_WhenPostEndpointCalled_ThenSavesShareExchangeAndReturnsOK(
+        public async Task GivenValidShareExchangeRequest_WhenPostEndpointCalled_ThenSavesShareExchangeAndReturnsOK(
             string tickerSymbol, decimal price, decimal count, string brokerId)
         {
             var mockShareExchangeRepository = new Mock<IShareExchangeRepository>();

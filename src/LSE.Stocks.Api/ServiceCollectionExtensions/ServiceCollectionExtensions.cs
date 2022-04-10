@@ -1,14 +1,14 @@
-﻿using MediatR;
+﻿using LSE.Stocks.Application.Services.Shares.Commands.SaveShareExchange;
+using MediatR;
 using Microsoft.Extensions.DependencyInjection;
-using System.Reflection;
 
-namespace LSE.Stocks.Application.ServiceCollectionExtensions
+namespace LSE.Stocks.Api.ServiceCollectionExtensions
 {
     public static class ServiceCollectionExtensions
     {
         public static IServiceCollection AddApplicationServices(this IServiceCollection services)
         {
-            services.AddMediatR(Assembly.GetExecutingAssembly());
+            services.AddMediatR(typeof(SaveShareExchangeCommand));
 
             return services;
         }

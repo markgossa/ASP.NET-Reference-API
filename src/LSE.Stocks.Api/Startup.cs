@@ -1,4 +1,4 @@
-﻿using LSE.Stocks.Application.ServiceCollectionExtensions;
+﻿using LSE.Stocks.Api.ServiceCollectionExtensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -13,13 +13,11 @@ namespace LSE.Stocks.Api
 
         public Startup(IConfiguration configuration) => Configuration = configuration;
 
-        public static void ConfigureServices(IServiceCollection services)
-        {
-            services.AddControllers();
-            services.AddEndpointsApiExplorer();
-            services.AddSwaggerGen();
-            services.AddApplicationServices();
-        }
+        public static void ConfigureServices(IServiceCollection services) 
+            => services.AddEndpointsApiExplorer()
+                .AddSwaggerGen()
+                .AddApplicationServices()
+                .AddControllers();
 
         public static void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
