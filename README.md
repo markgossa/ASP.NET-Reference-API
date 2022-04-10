@@ -48,6 +48,7 @@ Questions:
 * Create build and release pipelines, infrastructure as code etc
 * Test concurrent connections to SQL have no issues
 * Test using docker file
+* Review memory usage when getting share price from SQL database - ensure that data is streamed rather than all data being pulled out into memory which could cause OutOfMemoryExceptions with large datasets
 
 ## Architectural Decision Records
 
