@@ -15,7 +15,7 @@ public class GetSharePriceTests : IClassFixture<ApiTestsContext>
 
     [Theory]
     [InlineData("NASDAQ:AAPL", 16.67)]
-    [InlineData("NASDAQ:TSLA")]
+    [InlineData("NASDAQ:TSLA", 250)]
     public async Task GivenValidSharePriceRequest_WhenGetEndpointCalled_ThenReturnsAveragePriceAndReturnsOK(
         string tickerSymbol, decimal expectedPrice)
     {
@@ -25,6 +25,38 @@ public class GetSharePriceTests : IClassFixture<ApiTestsContext>
         Assert.Equal(expectedPrice, price?.Price);
         Assert.Equal(tickerSymbol, price?.TickerSymbol);
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+    }
+    
+    [Theory]
+    [InlineData("NOTFOUND")]
+    public async Task GivenSharePriceRequestForInvalidShare_WhenGetEndpointCalled_ThenReturnsNotFound(
+        string tickerSymbol)
+    {
+        var response = await GetSharePriceAsync(tickerSymbol);
+
+        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+    }
+    
+    [Theory]
+    [InlineData("012345678901234567891")]
+    public async Task GivenSharePriceRequestForTickerSymbolOver20Chars_WhenGetEndpointCalled_ThenReturnsBadRequest(
+        string tickerSymbol)
+    {
+        var response = await GetSharePriceAsync(tickerSymbol);
+
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+    }
+    
+    [Theory]
+    [InlineData("")]
+    [InlineData(" ")]
+    [InlineData(null)]
+    public async Task GivenSharePriceRequestForTickerSymbolEmpty_WhenGetEndpointCalled_ThenReturnsBadRequest(
+        string tickerSymbol)
+    {
+        var response = await GetSharePriceAsync(tickerSymbol);
+
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
     }
 
     private static async Task<SharePriceResponse?> DeserializeResponseAsync(HttpResponseMessage response)

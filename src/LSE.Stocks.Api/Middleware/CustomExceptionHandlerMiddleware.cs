@@ -1,4 +1,5 @@
 ﻿using FluentValidation;
+using LSE.Stocks.Application.Exceptions;
 using Microsoft.AspNetCore.Http;
 using System.Net;
 using System.Text.Json;
@@ -34,6 +35,9 @@ public class CustomExceptionHandlerMiddleware
             case ValidationException validationException:
                 httpStatusCode = HttpStatusCode.BadRequest;
                 result = JsonSerializer.Serialize(validationException.Errors);
+                break;
+            case NotFoundException _:
+                httpStatusCode = HttpStatusCode.NotFound;
                 break;
         }
 

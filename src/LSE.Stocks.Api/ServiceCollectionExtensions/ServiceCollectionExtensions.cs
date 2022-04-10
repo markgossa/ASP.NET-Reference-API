@@ -12,7 +12,7 @@ public static class ServiceCollectionExtensions
 {
     public static IServiceCollection RegisterServices(this IServiceCollection services)
     {
-        services.AddValidatorsFromAssembly(typeof(SaveShareExchangeCommandValidator).Assembly);
+        services.AddValidatorsFromAssembly(typeof(GetSharePriceQueryValidator).Assembly);
         services.AddMediatR(typeof(SaveShareExchangeCommand));
         services.AddTransient(typeof(IPipelineBehavior<,>), typeof(RequestValidationBehaviour<,>));
         services.AddScoped<IShareExchangeRepository, ShareExchangeRepository>();
