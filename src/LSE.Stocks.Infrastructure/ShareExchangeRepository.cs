@@ -5,5 +5,5 @@ namespace LSE.Stocks.Infrastructure;
 
 public class ShareExchangeRepository : IShareExchangeRepository
 {
-    public async Task SaveShareExchangeAsync(ShareExchange shareExchange) { }
+    public async Task SaveShareExchangeAsync(ShareExchange shareExchange) => throw new NotImplementedException();
 }

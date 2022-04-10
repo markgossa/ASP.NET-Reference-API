@@ -33,40 +33,30 @@ public class SaveShareExchangeTests : IClassFixture<ApiTestsContext>
     [Theory]
     [InlineData("012345678901234567891", 10, 1, "BR10834")]
     public async Task GivenValidShareExchangeRequestWithTickerSymbolOver20Chars_WhenPostEndpointCalled_ThenDoesNotShareExchangeAndReturnsBadRequest(
-        string tickerSymbol, decimal price, decimal count, string brokerId)
-    {
-        var shareExchangeRequest = new SaveShareExchangeRequest(tickerSymbol, price, count, brokerId);
-        var response = await PostShareExchangeAsync(shareExchangeRequest);
-
-        AssertShareExchangeNotSaved(shareExchangeRequest);
-        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
-    }
+        string tickerSymbol, decimal price, decimal count, string brokerId) 
+            => await PostShareExchangeAndAssertNotSavedAndBadRequest(tickerSymbol, price, count, brokerId);
+    
+    [Theory]
+    [InlineData("", 10, 1, "BR10834")]
+    [InlineData(" ", 10, 1, "BR10834")]
+    [InlineData(null, 10, 1, "BR10834")]
+    public async Task GivenValidShareExchangeRequestWithEmptyTickerSymbol_WhenPostEndpointCalled_ThenDoesNotShareExchangeAndReturnsBadRequest(
+        string tickerSymbol, decimal price, decimal count, string brokerId) 
+            => await PostShareExchangeAndAssertNotSavedAndBadRequest(tickerSymbol, price, count, brokerId);
 
     [Theory]
     [InlineData("NASDAQ:AAPL", 0, 1, "BR10834")]
     [InlineData("NASDAQ:AAPL", -1, 1, "BR10834")]
     public async Task GivenValidShareExchangeRequestWithPriceZeroOrLess_WhenPostEndpointCalled_ThenDoesNotShareExchangeAndReturnsBadRequest(
         string tickerSymbol, decimal price, decimal count, string brokerId)
-    {
-        var shareExchangeRequest = new SaveShareExchangeRequest(tickerSymbol, price, count, brokerId);
-        var response = await PostShareExchangeAsync(shareExchangeRequest);
-
-        AssertShareExchangeNotSaved(shareExchangeRequest);
-        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
-    }
+            => await PostShareExchangeAndAssertNotSavedAndBadRequest(tickerSymbol, price, count, brokerId);
 
     [Theory]
     [InlineData("NASDAQ:AAPL", 150, 0, "BR10834")]
     [InlineData("NASDAQ:AAPL", 200, -1, "BR10834")]
     public async Task GivenValidShareExchangeRequestWithCountZeroOrLess_WhenPostEndpointCalled_ThenDoesNotShareExchangeAndReturnsBadRequest(
         string tickerSymbol, decimal price, decimal count, string brokerId)
-    {
-        var shareExchangeRequest = new SaveShareExchangeRequest(tickerSymbol, price, count, brokerId);
-        var response = await PostShareExchangeAsync(shareExchangeRequest);
-
-        AssertShareExchangeNotSaved(shareExchangeRequest);
-        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
-    }
+            => await PostShareExchangeAndAssertNotSavedAndBadRequest(tickerSymbol, price, count, brokerId);
 
     private async Task<HttpResponseMessage> PostShareExchangeAsync(SaveShareExchangeRequest shareExchangeRequest)
             => await _context.HttpCleint.PostAsync(_shareExchangeApiRoute, BuildHttpContent(shareExchangeRequest));
@@ -85,4 +75,13 @@ public class SaveShareExchangeTests : IClassFixture<ApiTestsContext>
     private void AssertShareExchangeNotSaved(SaveShareExchangeRequest shareExchangeRequest)
             => _context.MockShareExchangeRepository.Verify(m => m.SaveShareExchangeAsync(MapToShareExchange(shareExchangeRequest)),
                 Times.Never);
+
+    private async Task PostShareExchangeAndAssertNotSavedAndBadRequest(string tickerSymbol, decimal price, decimal count, string brokerId)
+    {
+        var shareExchangeRequest = new SaveShareExchangeRequest(tickerSymbol, price, count, brokerId);
+        var response = await PostShareExchangeAsync(shareExchangeRequest);
+
+        AssertShareExchangeNotSaved(shareExchangeRequest);
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+    }
 }

@@ -8,16 +8,16 @@ namespace LSE.Stocks.Api.Tests.Component;
 
 public class GetSharePriceTests : IClassFixture<ApiTestsContext>
 {
-    private const string _sharePricesApiRoute = "shareprices";
+    private const string _sharePricesApiRoute = "shareprice";
     private readonly ApiTestsContext _context;
 
     public GetSharePriceTests(ApiTestsContext context) => _context = context;
 
     [Theory]
-    [InlineData("NASDAQ:AAPL", 20)]
-    //[InlineData("NASDAQ:TSLA")]
+    [InlineData("NASDAQ:AAPL", 16.67)]
+    [InlineData("NASDAQ:TSLA")]
     public async Task GivenValidSharePriceRequest_WhenGetEndpointCalled_ThenReturnsAveragePriceAndReturnsOK(
-        string tickerSymbol, int expectedPrice)
+        string tickerSymbol, decimal expectedPrice)
     {
         var response = await GetSharePriceAsync(tickerSymbol);
         var price = await DeserializeResponseAsync(response);
@@ -30,6 +30,7 @@ public class GetSharePriceTests : IClassFixture<ApiTestsContext>
     private static async Task<SharePriceResponse?> DeserializeResponseAsync(HttpResponseMessage response)
     {
         var json = await response.Content.ReadAsStringAsync();
+        
         return JsonSerializer.Deserialize<SharePriceResponse>(json, 
             new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
     }

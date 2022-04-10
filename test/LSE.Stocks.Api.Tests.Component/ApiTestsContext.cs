@@ -11,7 +11,7 @@ namespace LSE.Stocks.Api.Tests.Component
     {
         public Mock<IShareExchangeRepository> MockShareExchangeRepository { get; } = new();
         public HttpClient HttpCleint { get; }
-        private readonly Mock<ISharePricingRepository> _mockSharePricingRepository = new();
+        private readonly Mock<ISharePriceRepository> _mockSharePriceRepository = new();
         private readonly WebApplicationFactory<Startup> _webApplicationFactory;
 
         public ApiTestsContext()
@@ -22,19 +22,28 @@ namespace LSE.Stocks.Api.Tests.Component
         }
 
         private void SetUpMockSharePricingRepository()
-            => _mockSharePricingRepository.Setup(m => m.GetSharePricesAsync("NASDAQ:AAPL"))
-                .ReturnsAsync(new List<SharePrice>()
+        {
+            _mockSharePriceRepository.Setup(m => m.GetShareExchangesAsync("NASDAQ:AAPL"))
+                 .ReturnsAsync(new List<ShareExchange>()
                     {
-                        new("NASDAQ:AAPL", 10, 1),
-                        new("NASDAQ:AAPL", 20, 1),
+                        new("NASDAQ:AAPL", 10, 2, null),
+                        new("NASDAQ:AAPL", 20, 4, null),
                     });
+            
+            _mockSharePriceRepository.Setup(m => m.GetShareExchangesAsync("NASDAQ:TSLA"))
+                 .ReturnsAsync(new List<ShareExchange>()
+                    {
+                        new("NASDAQ:TSLA", 150, 2, null),
+                        new("NASDAQ:TSLA", 300, 4, null)
+                    });
+        }
 
         private WebApplicationFactory<Startup> BuildWebApplicationFactory()
             => new WebApplicationFactory<Startup>()
             .WithWebHostBuilder(b => b.ConfigureServices(services =>
             {
                 ((ServiceCollection)services).AddSingleton(MockShareExchangeRepository.Object);
-                ((ServiceCollection)services).AddSingleton(_mockSharePricingRepository.Object);
+                ((ServiceCollection)services).AddSingleton(_mockSharePriceRepository.Object);
             }));
 
         public void Dispose()
