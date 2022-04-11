@@ -12,7 +12,7 @@ The OpenAPI Specification (Swagger) contains the latest API documentation at `/s
 
 ### Functional Requirements
 
-Assumptions (requires clarification):
+#### Assumptions (requires clarification):
 * Max number of decimal places for stock price is 2
 * Stock price must be greater than £0
 * Max number of decimal places for stock count is 2
@@ -20,7 +20,7 @@ Assumptions (requires clarification):
 * Max ticker symbol length is 20
 * Ticker symbol cannot be whitespace or empty
 
-Questions:
+#### Questions:
 * What is the BrokerId format?
 * What are the BrokerId validations (length etc)?
 * What is the max count of shares?
@@ -39,6 +39,7 @@ Questions:
 * Providing documentation to brokers?
 
 ## Remaining tasks
+
 * Add logging using Application Insights. CorrelationId to be logged and stored to database for each Trade.
 * XML comments should be added to requests, responses and controllers to aid clients
 * EditorConfig can be added to ensure code style in line with team requirements
@@ -49,8 +50,12 @@ Questions:
 * Test concurrent connections to SQL have no issues
 * Test using docker file
 * Review memory usage when getting share price from SQL database - ensure that data is streamed rather than all data being pulled out into memory which could cause OutOfMemoryExceptions with large datasets
+* Use batching for incoming requests to save trades and write them to the database in a single transaction
+* Add error handling and logging of errors with `correlationIds` sent back to the consumer in case of errors
 
 ## Architectural Decision Records
+
+Below is a list of architectural decisions made for this service.
 
 ### Code standards
 
@@ -108,13 +113,23 @@ Questions:
 
 ### Scalability and high availability
 
+#### Active/active global high level design:
+![alt text](GlobalArchitecture.jpg "title")
+
 * A multi-region set up can be created with at least 2 Application Gateways and a zone-redundant API Management installation per region
 * Azure Front Door is highly scalable and reliable
 * To load balance between regions and direct users to their closest region, Traffic Manager can be used
 * Compute scalability and availability can be provided by using an AKS cluster with multiple nodes. One of these should be in each required region.
 * For multi-region set-ups where regions must be active/active then consider using CosmosDB instead of SQL as this allows for a multi-master setup where data can be written in multiple region without connecting cross-region which may cause performance issues
-* CQRS: Consider having a database specialized for writing trades and another one for reading share prices. Also consider caching for share prices or a background process that calculates the price every specified period and writes to a separate database. NB: Eventual consistency concerns (the price will not be exactly up to date).
 * Each container is run inside a pod in Kubernetes. Ensure that there are multiple replicas of the pod so this enables high availability and scalabilty. Ensure that pods are spread across multiple nodes in the Kubernetes cluster.
+* Nesting of Traffic Manager routes users to the closest geographical region (e.g. United States) and then routes them to the highest performing Azure region e.g. Azure East US
+
+#### Other scalability considerations:
+
+* CQRS: Consider having a database specialized for writing trades and another one for reading share prices. Also consider caching for share prices or a background process that calculates the price every specified period and writes to a separate database. NB: Eventual consistency concerns (the price will not be exactly up to date).
+* The share price repository could use caching to cache share prices. NB: Need to invalidate cached data and cached data will always be out of sync.
+* Batch incoming requests to save trades (e.g. allow clients to send an `IEnumerable<SaveTradeRequest>`). This then allows saving multiple entries to the database in a single transaction.
+* An alternative approach is to use an event driven architecture (e.g. with Azure Service Bus). Here, trades can be submitted using a queue (which allows for load levelling). Prices can then be calculated on a schedule and events published with the updated prices. Consumers can then keep their own cache of prices and use this when looking up prices.
 
 ## Other considerations
 
