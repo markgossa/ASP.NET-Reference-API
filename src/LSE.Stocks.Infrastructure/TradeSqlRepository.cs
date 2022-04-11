@@ -4,15 +4,16 @@ using LSE.Stocks.Infrastructure.Models;
 
 namespace LSE.Stocks.Infrastructure;
 
-public class TradeSqlRepository : ITradeRepository
+public class TradeSqlRepository : ITradeRepository, IDisposable, IAsyncDisposable
 {
-    private readonly TradesDbContext _dbContext;
+    private TradesDbContext? _dbContext;
+    private bool _disposedValue;
 
     public TradeSqlRepository(TradesDbContext dbContext) => _dbContext = dbContext;
 
     public async Task SaveTradeAsync(Trade trade)
     {
-        _dbContext.Add(new TradeRow()
+        _dbContext!.Add(new TradeRow()
         {
             TickerSymbol = trade.TickerSymbol,
             BrokerId = trade.BrokerId,
@@ -21,5 +22,42 @@ public class TradeSqlRepository : ITradeRepository
         });
 
         await _dbContext.SaveChangesAsync();
+    }
+
+    public void Dispose()
+    {
+        Dispose(disposing: true);
+        GC.SuppressFinalize(this);
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        await DisposeAsyncCore();
+        Dispose(disposing: false);
+        GC.SuppressFinalize(this);
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
+        if (!_disposedValue)
+        {
+            if (disposing)
+            {
+                _dbContext?.Dispose();
+            }
+
+            _dbContext = null;
+            _disposedValue = true;
+        }
+    }
+
+    protected virtual async ValueTask DisposeAsyncCore()
+    {
+        if (_dbContext is not null)
+        {
+            await _dbContext.DisposeAsync().ConfigureAwait(false);
+        }
+
+        _dbContext = null;
     }
 }
