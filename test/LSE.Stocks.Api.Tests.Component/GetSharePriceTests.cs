@@ -68,5 +68,5 @@ public class GetSharePriceTests : IClassFixture<ApiTestsContext>
     }
 
     private async Task<HttpResponseMessage> GetSharePriceAsync(string tickerSymbol)
-            => await _context.HttpCleint.GetAsync($"{_sharePricesApiRoute}?tickerSymbol={tickerSymbol}");
+            => await _context.HttpClient.GetAsync($"{_sharePricesApiRoute}?tickerSymbol={tickerSymbol}");
 }
