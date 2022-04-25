@@ -1,5 +1,6 @@
 ﻿using LSE.Stocks.Application.Repositories;
 using LSE.Stocks.Domain.Models.Shares;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
@@ -7,17 +8,15 @@ using System.Net.Http;
 
 namespace LSE.Stocks.Api.Tests.Component
 {
-    public class ApiTestsContext : IDisposable
+    public class ApiTestsContext : WebApplicationFactory<Startup>, IDisposable
     {
         public Mock<ITradeRepository> MockTradeRepository { get; } = new();
-        public HttpClient HttpCleint { get; }
+        public HttpClient HttpClient { get; }
         private readonly Mock<ISharePriceRepository> _mockSharePriceRepository = new();
-        private readonly WebApplicationFactory<Startup> _webApplicationFactory;
 
         public ApiTestsContext()
         {
-            _webApplicationFactory = BuildWebApplicationFactory();
-            HttpCleint = _webApplicationFactory.CreateClient();
+            HttpClient = CreateClient();
             SetUpMockSharePricingRepository();
         }
 
@@ -29,7 +28,7 @@ namespace LSE.Stocks.Api.Tests.Component
                         new("NASDAQ:AAPL", 10, 2, null),
                         new("NASDAQ:AAPL", 20, 4, null),
                     });
-            
+
             _mockSharePriceRepository.Setup(m => m.GetTradesAsync("NASDAQ:TSLA"))
                  .ReturnsAsync(new List<Trade>()
                     {
@@ -38,18 +37,16 @@ namespace LSE.Stocks.Api.Tests.Component
                     });
         }
 
-        private WebApplicationFactory<Startup> BuildWebApplicationFactory()
-            => new WebApplicationFactory<Startup>()
-            .WithWebHostBuilder(b => b.ConfigureServices(services =>
+        protected override void ConfigureWebHost(IWebHostBuilder builder)
+            => builder.ConfigureServices(services =>
             {
                 ((ServiceCollection)services).AddSingleton(MockTradeRepository.Object);
                 ((ServiceCollection)services).AddSingleton(_mockSharePriceRepository.Object);
-            }));
+            });
 
-        public void Dispose()
+        public new void Dispose()
         {
-            HttpCleint.Dispose();
-            _webApplicationFactory.Dispose();
+            HttpClient.Dispose();
             GC.SuppressFinalize(this);
         }
     }

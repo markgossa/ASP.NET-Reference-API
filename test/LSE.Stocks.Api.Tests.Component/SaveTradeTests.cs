@@ -59,7 +59,7 @@ public class SaveTradeTests : IClassFixture<ApiTestsContext>
             => await PostTradeAndAssertNotSavedAndBadRequest(tickerSymbol, price, count, brokerId);
 
     private async Task<HttpResponseMessage> PostTradeAsync(SaveTradeRequest tradeRequest)
-            => await _context.HttpCleint.PostAsync(_tradeApiRoute, BuildHttpContent(tradeRequest));
+            => await _context.HttpClient.PostAsync(_tradeApiRoute, BuildHttpContent(tradeRequest));
 
     private static StringContent BuildHttpContent(SaveTradeRequest tradeRequest)
         => new(JsonSerializer.Serialize(tradeRequest), Encoding.UTF8, MediaTypeNames.Application.Json);
