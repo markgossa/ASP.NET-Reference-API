@@ -98,7 +98,7 @@ Below is a list of architectural decisions made for this service.
 ### Security standards
 
 * TLS 1.2 end-to-end
-* Broker Authentication using Client Authentication
+* Broker Authentication using client certificates or OAuth2
 * Authentication concerns kept out of the code and all authentication handled by API Management
 * External connections from brokers connect to Azure Front Door then Application Gateway then API Management
 * IP restrictions set on Azure Front Door to allow only broker IPs to connect
