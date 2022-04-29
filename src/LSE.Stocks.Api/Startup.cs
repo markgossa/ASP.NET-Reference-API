@@ -5,6 +5,9 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Swashbuckle.AspNetCore.SwaggerGen;
+using System.IO;
+using System.Reflection;
 
 namespace LSE.Stocks.Api;
 
@@ -16,11 +19,11 @@ public class Startup
 
     public void ConfigureServices(IServiceCollection services) 
         => services.AddEndpointsApiExplorer()
-            .AddSwaggerGen()
+            .AddSwaggerGen(o => AddSwaggerDocumentation(o))
             .AddMediatorServices()
             .AddRepositories(Configuration)
             .AddControllers();
-
+    
     public static void Configure(IApplicationBuilder app, IWebHostEnvironment env)
     {
         if (env.IsDevelopment())
@@ -35,5 +38,11 @@ public class Startup
         app.UseCustomExceptionHandler();
 
         app.UseEndpoints(endpoints => endpoints.MapControllers());
+    }
+
+    private static void AddSwaggerDocumentation(SwaggerGenOptions o)
+    {
+        var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+        o.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
     }
 }
