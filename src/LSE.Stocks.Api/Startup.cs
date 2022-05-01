@@ -21,6 +21,7 @@ public class Startup
         => services.AddEndpointsApiExplorer()
             .AddSwaggerGen(o => AddSwaggerDocumentation(o))
             .AddMediatorServices()
+            .AddLogging()
             .AddApplicationInsightsTelemetry()
             .AddRepositories(Configuration)
             .AddControllers();
