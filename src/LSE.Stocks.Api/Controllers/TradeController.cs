@@ -13,6 +13,13 @@ public class TradeController : Controller
 
     public TradeController(IMediator mediator) => _mediator = mediator;
 
+    /// <summary>
+    /// Saves a trade of a share
+    /// </summary>
+    /// <param name="tradeRequest"></param>
+    /// <returns>Ok</returns>
+    /// <response code="200">Returns 200 if the trade was saved successfully</response>
+    /// <response code="400">Returns 400 if the request to save a trade was invalid</response>
     [HttpPost]
     public async Task<ActionResult> SaveTrade([FromBody] SaveTradeRequest tradeRequest)
     {
