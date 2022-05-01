@@ -12,11 +12,12 @@ public class SharePriceSqlRepository : ISharePriceRepository, IDisposable, IAsyn
 
     public SharePriceSqlRepository(TradesDbContext dbContext) => _dbContext = dbContext;
 
-    public async Task<IEnumerable<Trade>> GetTradesAsync(string tickerSymbol)
-        => _dbContext!.Trades
+    public Task<IEnumerable<Trade>> GetTradesAsync(string tickerSymbol)
+        => Task.FromResult(_dbContext!.Trades
             .AsNoTracking()
             .Where(t => t.TickerSymbol.ToLower() == tickerSymbol.ToLower())
-            .Select(t => new Trade(t.TickerSymbol, t.Price, t.Count, t.BrokerId));
+            .Select(t => new Trade(t.TickerSymbol, t.Price, t.Count, t.BrokerId))
+            .AsEnumerable());
 
     public void Dispose()
     {

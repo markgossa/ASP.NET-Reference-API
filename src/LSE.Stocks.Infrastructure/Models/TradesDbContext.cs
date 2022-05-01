@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿#nullable disable
+
+using Microsoft.EntityFrameworkCore;
 
 namespace LSE.Stocks.Infrastructure.Models;
 
