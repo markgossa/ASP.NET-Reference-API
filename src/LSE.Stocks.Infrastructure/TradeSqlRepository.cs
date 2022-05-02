@@ -1,27 +1,42 @@
 ﻿using LSE.Stocks.Application.Repositories;
 using LSE.Stocks.Domain.Models.Shares;
 using LSE.Stocks.Infrastructure.Models;
+using Microsoft.Extensions.Logging;
 
 namespace LSE.Stocks.Infrastructure;
 
 public class TradeSqlRepository : ITradeRepository, IDisposable, IAsyncDisposable
 {
     private TradesDbContext? _dbContext;
+    private readonly ILogger<TradeSqlRepository> _logger;
     private bool _disposedValue;
 
-    public TradeSqlRepository(TradesDbContext dbContext) => _dbContext = dbContext;
+    public TradeSqlRepository(TradesDbContext dbContext, ILogger<TradeSqlRepository> logger)
+    {
+        _dbContext = dbContext;
+        _logger = logger;
+    }
 
     public async Task SaveTradeAsync(Trade trade)
     {
-        _dbContext!.Add(new TradeRow()
+        try
         {
-            TickerSymbol = trade.TickerSymbol,
-            BrokerId = trade.BrokerId,
-            Count = trade.Count,
-            Price = trade.Price
-        });
+            _dbContext!.Add(new TradeRow()
+            {
+                TickerSymbol = trade.TickerSymbol,
+                BrokerId = trade.BrokerId,
+                Count = trade.Count,
+                Price = trade.Price
+            });
 
-        await _dbContext.SaveChangesAsync();
+            await _dbContext.SaveChangesAsync();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "An error occurred saving trades");
+
+            throw;
+        }
     }
 
     public void Dispose()

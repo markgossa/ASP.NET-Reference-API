@@ -18,30 +18,38 @@ namespace LSE.Stocks.Api.Tests.Component
         {
             HttpClient = CreateClient();
             SetUpMockSharePricingRepository();
+            SetUpMockTradeRepository();
         }
 
         private void SetUpMockSharePricingRepository()
         {
-            _mockSharePriceRepository.Setup(m => m.GetTradesAsync("NASDAQ:AAPL"))
-                 .ReturnsAsync(new List<Trade>()
+            _ = _mockSharePriceRepository.Setup(m => m.GetTradesAsync("NASDAQ:AAPL"))
+                .ReturnsAsync(new List<Trade>()
                     {
                         new("NASDAQ:AAPL", 10, 2, null),
                         new("NASDAQ:AAPL", 20, 4, null),
                     });
 
-            _mockSharePriceRepository.Setup(m => m.GetTradesAsync("NASDAQ:TSLA"))
-                 .ReturnsAsync(new List<Trade>()
+            _ = _mockSharePriceRepository.Setup(m => m.GetTradesAsync("NASDAQ:TSLA"))
+                .ReturnsAsync(new List<Trade>()
                     {
                         new("NASDAQ:TSLA", 150, 2, null),
                         new("NASDAQ:TSLA", 300, 4, null)
                     });
+
+            _ = _mockSharePriceRepository.Setup(m => m.GetTradesAsync("NASDAQ:ERROR"))
+                .Throws(new Exception("Something bad happened"));
         }
+
+        private void SetUpMockTradeRepository() 
+            => MockTradeRepository.Setup(m => m.SaveTradeAsync(It.Is<Trade>(t => t.TickerSymbol == "NASDAQ:ERROR")))
+                .ThrowsAsync(new Exception());
 
         protected override void ConfigureWebHost(IWebHostBuilder builder)
             => builder.ConfigureServices(services =>
             {
-                ((ServiceCollection)services).AddSingleton(MockTradeRepository.Object);
-                ((ServiceCollection)services).AddSingleton(_mockSharePriceRepository.Object);
+                _ = ((ServiceCollection)services).AddSingleton(MockTradeRepository.Object);
+                _ = ((ServiceCollection)services).AddSingleton(_mockSharePriceRepository.Object);
             });
 
         public new void Dispose()
