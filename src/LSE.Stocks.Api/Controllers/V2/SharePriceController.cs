@@ -4,9 +4,10 @@ using LSE.Stocks.Domain.Models.Shares;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
-namespace LSE.Stocks.Api.Controllers;
+namespace LSE.Stocks.Api.Controllers.V2;
 
-[Route("[controller]")]
+[ApiVersion("2.0")]
+[Route("v{version:apiVersion}/SharePrice")]
 [ApiController]
 public class SharePriceController : Controller
 {
@@ -22,13 +23,14 @@ public class SharePriceController : Controller
     /// <response code="200">Returns 200 and the share price</response>
     /// <response code="400">Returns 400 if the query is invalid</response>
     [HttpGet]
-    public async Task<ActionResult<SharePriceResponse>> GetPrice([FromQuery] string tickerSymbol)
+    [Route("{tickerSymbol}")]
+    public async Task<ActionResult<SharePriceResponse>> GetPrice(string tickerSymbol)
     {
         var sharePriceQueryResponse = await _mediator.Send(new GetSharePriceQuery(tickerSymbol));
 
         return new OkObjectResult(BuildSharePriceQueryResponse(sharePriceQueryResponse.SharePrice));
     }
 
-    private static SharePriceResponse BuildSharePriceQueryResponse(SharePrice sharePrice) 
-        => new (sharePrice.TickerSymbol, sharePrice.Price);
+    private static SharePriceResponse BuildSharePriceQueryResponse(SharePrice sharePrice)
+        => new(sharePrice.TickerSymbol, sharePrice.Price);
 }

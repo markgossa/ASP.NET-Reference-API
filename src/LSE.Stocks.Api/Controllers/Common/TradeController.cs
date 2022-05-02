@@ -3,9 +3,12 @@ using LSE.Stocks.Application.Services.Shares.Commands.SaveTrade;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
-namespace LSE.Stocks.Api.Controllers;
+namespace LSE.Stocks.Api.Controllers.Common;
 
+[ApiVersion("1.0")]
+[ApiVersion("2.0")]
 [Route("[controller]")]
+[Route("v{version:apiVersion}/[controller]")]
 [ApiController]
 public class TradeController : Controller
 {
