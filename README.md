@@ -1,57 +1,31 @@
-# London Stock Exchange Stocks API
+# ASP.NET Reference API
+
+- [ASP.NET Reference API](#aspnet-reference-api)
+  - [Overview](#overview)
+    - [Operations](#operations)
+  - [Architectural Decision Records](#architectural-decision-records)
+    - [Code standards](#code-standards)
+    - [Infrastructure](#infrastructure)
+    - [Testing standards](#testing-standards)
+    - [Security standards](#security-standards)
+    - [Scalability and high availability](#scalability-and-high-availability)
+      - [Active/active global high level design:](#activeactive-global-high-level-design)
+      - [Other scalability considerations:](#other-scalability-considerations)
+  - [Other considerations](#other-considerations)
+  - [Upcoming improvements](#upcoming-improvements)
+  - [Business Requirements](#business-requirements)
+    - [Functional Requirements](#functional-requirements)
+      - [Assumptions (requires clarification):](#assumptions-requires-clarification)
+      - [Questions:](#questions)
+    - [Non-functional requirements](#non-functional-requirements)
 
 ## Overview
 
-An API to receive notification of trades from authorised brokers and expose the updated price to them.
+This is a reference API using best practices I've found over the years. It's a sample API which receives notification of trades from authorised brokers and exposes the updated price to them.
 
 ### Operations
 
 The OpenAPI Specification (Swagger) contains the latest API documentation at `/swagger/index.html`.
-
-## Business Requirements
-
-### Functional Requirements
-
-#### Assumptions (requires clarification):
-* Max number of decimal places for stock price is 2
-* Stock price must be greater than £0
-* Max number of decimal places for stock count is 2
-* Stock count must be greater than 0
-* Max ticker symbol length is 20
-* Ticker symbol cannot be whitespace or empty
-
-#### Questions:
-* What is the BrokerId format?
-* What are the BrokerId validations (length etc)?
-* What is the max count of shares?
-* What is the max price of a share?
-
-### Non-functional requirements
-
-* How many requests/second or max number of concurrent requests required when saving trades?
-* How many requests/second or max number of concurrent requests required when retrieving share prices?
-* What are the requirements for logging and reporting?
-* How much data should be stored/any requirements to purge data?
-* Security requirements? (Assumed TLS 1.2, authentication, IP restriction, DDOS protection)
-* Required response time for requests under load?
-* Process for onboarding new brokers and removing old brokers?
-* Authentication for brokers?
-* Providing documentation to brokers?
-
-## Remaining tasks
-
-* Add logging using Application Insights. CorrelationId to be logged and stored to database for each Trade.
-* XML comments should be added to requests, responses and controllers to aid clients
-* EditorConfig can be added to ensure code style in line with team requirements
-* Add automated acceptance or automated end-to-end tests. SpecFlow?
-* Add integration tests for the SQL repositories (with either SQLite in memory database or actual SQL database)
-* API Versioning and versioned Swagger
-* Create build and release pipelines, infrastructure as code etc
-* Test concurrent connections to SQL have no issues
-* Test using docker file
-* Review memory usage when getting share price from SQL database - ensure that data is streamed rather than all data being pulled out into memory which could cause OutOfMemoryExceptions with large datasets
-* Use batching for incoming requests to save trades and write them to the database in a single transaction
-* Add error handling and logging of errors with `correlationIds` sent back to the consumer in case of errors
 
 ## Architectural Decision Records
 
@@ -139,3 +113,43 @@ Below is a list of architectural decisions made for this service.
 * Document rollback plan
 * Service Transition
 * Ensure reproducible builds for application, test and infrastructure code using Azure Pipeline artifacts
+
+## Upcoming improvements
+
+* EditorConfig can be added to ensure code style in line with team requirements
+* Add automated acceptance or automated end-to-end tests. SpecFlow?
+* Create build and release pipelines, infrastructure as code etc
+* Test concurrent connections to SQL have no issues
+* Test using docker file
+* Review memory usage when getting share price from SQL database - ensure that data is streamed rather than all data being pulled out into memory which could cause OutOfMemoryExceptions with large datasets
+* Use batching for incoming requests to save trades and write them to the database in a single transaction
+
+## Business Requirements
+
+### Functional Requirements
+
+#### Assumptions (requires clarification):
+* Max number of decimal places for stock price is 2
+* Stock price must be greater than £0
+* Max number of decimal places for stock count is 2
+* Stock count must be greater than 0
+* Max ticker symbol length is 20
+* Ticker symbol cannot be whitespace or empty
+
+#### Questions:
+* What is the BrokerId format?
+* What are the BrokerId validations (length etc)?
+* What is the max count of shares?
+* What is the max price of a share?
+
+### Non-functional requirements
+
+* How many requests/second or max number of concurrent requests required when saving trades?
+* How many requests/second or max number of concurrent requests required when retrieving share prices?
+* What are the requirements for logging and reporting?
+* How much data should be stored/any requirements to purge data?
+* Security requirements? (Assumed TLS 1.2, authentication, IP restriction, DDOS protection)
+* Required response time for requests under load?
+* Process for onboarding new brokers and removing old brokers?
+* Authentication for brokers?
+* Providing documentation to brokers?
