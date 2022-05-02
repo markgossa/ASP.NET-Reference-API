@@ -76,10 +76,10 @@ public class TradeSqlRepositoryTestsBase : IDisposable, IAsyncDisposable
     {
         foreach (var record in records)
         {
-            await _tradesDbContext.AddAsync(record);
+            await _tradesDbContext!.AddAsync(record);
         }
 
-        await _tradesDbContext.SaveChangesAsync();
+        await _tradesDbContext!.SaveChangesAsync();
         _tradesDbContext.ChangeTracker.Clear();
     }
 
