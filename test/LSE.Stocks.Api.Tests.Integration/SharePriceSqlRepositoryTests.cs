@@ -1,6 +1,8 @@
 ﻿using LSE.Stocks.Domain.Models.Shares;
 using LSE.Stocks.Infrastructure;
 using LSE.Stocks.Infrastructure.Models;
+using Microsoft.Extensions.Logging;
+using Moq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,20 +18,18 @@ namespace LSE.Stocks.Api.Tests.Integration
         {
             const string tickerSymbol = "MSFT";
             await SeedDatabaseAsync(BuildTrades());
-
-            var sut = new SharePriceSqlRepository(_tradesDbContext!);
-            var actualTrades = await sut.GetTradesAsync(tickerSymbol);
+            
+            var actualTrades = await GetTradesFromSharePriceSqlRepositoryAsync(tickerSymbol);
 
             AssertCorrectTradeDetailsReturned(tickerSymbol, actualTrades);
         }
-        
+
         [Fact]
         public async Task GivenThereIsAreNoTradesInTheTradesTable_WhenIGetTrades_ThenAnEmptyIEnumerableIsReturned()
         {
             const string tickerSymbol = "MSFT";
 
-            var sut = new SharePriceSqlRepository(_tradesDbContext!);
-            var actualTrades = await sut.GetTradesAsync(tickerSymbol);
+            var actualTrades = await GetTradesFromSharePriceSqlRepositoryAsync(tickerSymbol);
 
             Assert.Empty(actualTrades);
         }
@@ -61,6 +61,13 @@ namespace LSE.Stocks.Api.Tests.Integration
             };
 
         private async Task SeedDatabaseAsync(List<TradeRow> trades) => await AddRecordsToInMemoryDatabase(trades);
+
+        private async Task<IEnumerable<Trade>> GetTradesFromSharePriceSqlRepositoryAsync(string tickerSymbol)
+        {
+            var sut = new SharePriceSqlRepository(_tradesDbContext!, new Mock<ILogger<SharePriceSqlRepository>>().Object);
+            var actualTrades = await sut.GetTradesAsync(tickerSymbol);
+            return actualTrades;
+        }
 
         private void AssertCorrectTradeDetailsReturned(string tickerSymbol, IEnumerable<Trade> actualTrades)
             => Assert.Equal(GetMatchingTradesFromDatabase(tickerSymbol), actualTrades);

@@ -24,17 +24,16 @@ public class CustomExceptionHandlerMiddleware
         }
     }
 
-    private static Task HandleExceptionAsync(HttpContext context, Exception exception)
+    private static async Task HandleExceptionAsync(HttpContext context, Exception exception)
     {
         var httpStatusCode = HttpStatusCode.InternalServerError;
-
-        var result = string.Empty;
+        var content = string.Empty;
 
         switch (exception)
         {
             case ValidationException validationException:
                 httpStatusCode = HttpStatusCode.BadRequest;
-                result = JsonSerializer.Serialize(validationException.Errors);
+                content = JsonSerializer.Serialize(validationException.Errors);
                 break;
             case NotFoundException _:
                 httpStatusCode = HttpStatusCode.NotFound;
@@ -42,8 +41,7 @@ public class CustomExceptionHandlerMiddleware
         }
 
         SetResponseProperties(context, httpStatusCode);
-
-        return context.Response.WriteAsync(result);
+        await AddResponseContentAsync(context, content);
     }
 
     private static void SetResponseProperties(HttpContext context, HttpStatusCode httpStatusCode)
@@ -51,4 +49,7 @@ public class CustomExceptionHandlerMiddleware
         context.Response.StatusCode = (int)httpStatusCode;
         context.Response.ContentType = "application/json";
     }
+    
+    private static async Task AddResponseContentAsync(HttpContext context, string content) 
+        => await context.Response.WriteAsync(content);
 }

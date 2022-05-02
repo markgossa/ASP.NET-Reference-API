@@ -32,7 +32,7 @@ public class SaveTradeTests : IClassFixture<ApiTestsContext>
 
     [Theory]
     [InlineData("012345678901234567891", 10, 1, "BR10834")]
-    public async Task GivenValidTradeRequestWithTickerSymbolOver20Chars_WhenPostEndpointCalled_ThenDoesNotTradeAndReturnsBadRequest(
+    public async Task GivenValidTradeRequestWithTickerSymbolOver20Chars_WhenPostEndpointCalled_ThenDoesNotAddTradeAndReturnsBadRequest(
         string tickerSymbol, decimal price, decimal count, string brokerId) 
             => await PostTradeAndAssertNotSavedAndBadRequest(tickerSymbol, price, count, brokerId);
     
@@ -40,23 +40,35 @@ public class SaveTradeTests : IClassFixture<ApiTestsContext>
     [InlineData("", 10, 1, "BR10834")]
     [InlineData(" ", 10, 1, "BR10834")]
     [InlineData(null, 10, 1, "BR10834")]
-    public async Task GivenValidTradeRequestWithEmptyTickerSymbol_WhenPostEndpointCalled_ThenDoesNotTradeAndReturnsBadRequest(
+    public async Task GivenValidTradeRequestWithEmptyTickerSymbol_WhenPostEndpointCalled_ThenDoesNotAddTradeAndReturnsBadRequest(
         string tickerSymbol, decimal price, decimal count, string brokerId) 
             => await PostTradeAndAssertNotSavedAndBadRequest(tickerSymbol, price, count, brokerId);
 
     [Theory]
     [InlineData("NASDAQ:AAPL", 0, 1, "BR10834")]
     [InlineData("NASDAQ:AAPL", -1, 1, "BR10834")]
-    public async Task GivenValidTradeRequestWithPriceZeroOrLess_WhenPostEndpointCalled_ThenDoesNotTradeAndReturnsBadRequest(
+    public async Task GivenValidTradeRequestWithPriceZeroOrLess_WhenPostEndpointCalled_ThenDoesNotAddTradeAndReturnsBadRequest(
         string tickerSymbol, decimal price, decimal count, string brokerId)
             => await PostTradeAndAssertNotSavedAndBadRequest(tickerSymbol, price, count, brokerId);
 
     [Theory]
     [InlineData("NASDAQ:AAPL", 150, 0, "BR10834")]
     [InlineData("NASDAQ:AAPL", 200, -1, "BR10834")]
-    public async Task GivenValidTradeRequestWithCountZeroOrLess_WhenPostEndpointCalled_ThenDoesNotTradeAndReturnsBadRequest(
+    public async Task GivenValidTradeRequestWithCountZeroOrLess_WhenPostEndpointCalled_ThenDoesNotAddTradeAndReturnsBadRequest(
         string tickerSymbol, decimal price, decimal count, string brokerId)
             => await PostTradeAndAssertNotSavedAndBadRequest(tickerSymbol, price, count, brokerId);
+
+    [Theory]
+    [InlineData("NASDAQ:ERROR", 150, 4, "BR10834")]
+    public async Task GivenValidTradeRequest_WhenPostEndpointCalledAndAnErrorOccurs_ThenDoesAddNotTradeAndReturnsInternalServerError(
+        string tickerSymbol, decimal price, decimal count, string brokerId)
+    {
+        var saveTradeRequest = new SaveTradeRequest(tickerSymbol, price, count, brokerId);
+        var response = await PostTradeAsync(saveTradeRequest);
+        
+        AssertTradeSaved(saveTradeRequest);
+        Assert.Equal(HttpStatusCode.InternalServerError, response.StatusCode);
+    }
 
     private async Task<HttpResponseMessage> PostTradeAsync(SaveTradeRequest tradeRequest)
             => await _context.HttpClient.PostAsync(_tradeApiRoute, BuildHttpContent(tradeRequest));

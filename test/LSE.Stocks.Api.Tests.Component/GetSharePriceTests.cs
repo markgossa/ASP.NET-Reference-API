@@ -58,6 +58,16 @@ public class GetSharePriceTests : IClassFixture<ApiTestsContext>
 
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
     }
+    
+    [Theory]
+    [InlineData("NASDAQ:ERROR")]
+    public async Task GivenSharePriceRepositoryHasError_WhenGetEndpointCalled_ThenReturnsInternalServerError(
+        string tickerSymbol)
+    {
+        var response = await GetSharePriceAsync(tickerSymbol);
+
+        Assert.Equal(HttpStatusCode.InternalServerError, response.StatusCode);
+    }
 
     private static async Task<SharePriceResponse?> DeserializeResponseAsync(HttpResponseMessage response)
     {
