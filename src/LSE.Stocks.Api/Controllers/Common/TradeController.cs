@@ -10,11 +10,11 @@ namespace LSE.Stocks.Api.Controllers.Common;
 [Route("[controller]")]
 [Route("v{version:apiVersion}/[controller]")]
 [ApiController]
-public class TradeController : Controller
+public class TradesController : Controller
 {
     private readonly IMediator _mediator;
 
-    public TradeController(IMediator mediator) => _mediator = mediator;
+    public TradesController(IMediator mediator) => _mediator = mediator;
 
     /// <summary>
     /// Saves a trade of a share

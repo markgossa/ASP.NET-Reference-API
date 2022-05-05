@@ -8,8 +8,8 @@ namespace LSE.Stocks.Api.Tests.Component.V1;
 
 public class GetSharePriceV1Tests : IClassFixture<ApiTestsContext>
 {
-    private const string _apiRoute = "shareprice";
-    private const string _apiRouteV1 = "v1/shareprice";
+    private const string _apiRoute = "shareprices";
+    private const string _apiRouteV1 = "v1/shareprices";
     private readonly ApiTestsContext _context;
 
     public GetSharePriceV1Tests(ApiTestsContext context) => _context = context;

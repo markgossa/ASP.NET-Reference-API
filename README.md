@@ -4,6 +4,7 @@
   - [Overview](#overview)
     - [Operations](#operations)
   - [Architectural Decision Records](#architectural-decision-records)
+    - [API standards](#api-standards)
     - [Code standards](#code-standards)
     - [Infrastructure](#infrastructure)
     - [Testing standards](#testing-standards)
@@ -31,6 +32,18 @@ The OpenAPI Specification (Swagger) contains the latest API documentation at `/s
 
 Below is a list of architectural decisions made for this service.
 
+### API standards
+* Use POST to create resources and return 201 CREATED and a representation of the resource
+* Use GET to get resources and return 200 OK
+* Return 400 BAD REQUEST in cases where the client sends invalid data
+* Use nouns rather than verbs in URLs
+* Use plural nouns for resources
+* Return descriptive errors for BAD REQUEST
+* Use JSON for data transfer
+* API Versioning and versioned Swagger - NB: Aim to reduce breaking changes and ensure as few versions of the API in production at any one time
+* Use Open API Specification (Swagger)
+* XML Comments added to controllers, requests and responses so that they are available in the Open API specification (Swagger) but would also be available if a developer portal is used
+* 
 ### Code standards
 
 * .NET 6: 
@@ -48,8 +61,6 @@ Below is a list of architectural decisions made for this service.
   * Good separation of concerns between classes e.g. logging and validation in separate classes
   * More decoupled controllers: controllers don't need to be changed when adding application services
 * Fluent Validation - clear and easy to maintain and extend
-* XML Comments added to controllers, requests and responses so that they are available in the Open API specification (Swagger) but would also be available if a developer portal is used
-* API Versioning and versioned Swagger - NB: Aim to reduce breaking changes and ensure as few versions of the API in production at any one time
 * Logging using Application Insights. CorrelationId to be logged and stored to database for each Trade. Data to be stored in Log Analytics workspace so that data can be queried across multiple services in a distributed system.
 * Reading large amounts of data from SQL in one go is not ideal however it was decided better to have the business logic in application code rather than in a stored procedure (in case the database technology is changed at a later date). Entity Framework Core 6 used to simplify development but also enables streaming of records from SQL to the application rather than pulling all records in one go and holding them in memory.
 
