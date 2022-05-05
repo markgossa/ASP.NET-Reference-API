@@ -1,4 +1,5 @@
 ﻿using LSE.Stocks.Api.Models;
+using LSE.Stocks.Api.Services;
 using LSE.Stocks.Application.Services.Shares.Queries.GetSharePrice;
 using LSE.Stocks.Domain.Models.Shares;
 using MediatR;
@@ -13,8 +14,13 @@ namespace LSE.Stocks.Api.Controllers.V1;
 public class SharePricesController : Controller
 {
     private readonly IMediator _mediator;
+    private readonly ICorrelationIdGenerator _correlationIdGenerator;
 
-    public SharePricesController(IMediator mediator) => _mediator = mediator;
+    public SharePricesController(IMediator mediator, ICorrelationIdGenerator correlationIdGEnerator)
+    {
+        _mediator = mediator;
+        _correlationIdGenerator = correlationIdGEnerator;
+    }
 
     /// <summary>
     /// Gets the price for a ticker symbol
@@ -27,9 +33,13 @@ public class SharePricesController : Controller
     public async Task<ActionResult<SharePriceResponse>> GetPrice([FromQuery] string tickerSymbol)
     {
         var sharePriceQueryResponse = await _mediator.Send(new GetSharePriceQuery(tickerSymbol));
+        AddCorrelationIdHeader();
 
         return new OkObjectResult(BuildSharePriceQueryResponse(sharePriceQueryResponse.SharePrice));
     }
+
+    private void AddCorrelationIdHeader() 
+        => Response.Headers.Add("Correlation-Id", new(_correlationIdGenerator.Generate()));
 
     private static SharePriceResponse BuildSharePriceQueryResponse(SharePrice sharePrice)
         => new(sharePrice.TickerSymbol, sharePrice.Price);

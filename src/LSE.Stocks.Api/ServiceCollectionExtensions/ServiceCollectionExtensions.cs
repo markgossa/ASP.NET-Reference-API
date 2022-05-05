@@ -1,4 +1,5 @@
 ﻿using FluentValidation;
+using LSE.Stocks.Api.Services;
 using LSE.Stocks.Application.Common.Behaviours;
 using LSE.Stocks.Application.Repositories;
 using LSE.Stocks.Application.Services.Shares.Commands.SaveTrade;
@@ -28,6 +29,7 @@ public static class ServiceCollectionExtensions
         services.AddDbContext<TradesDbContext>(o => o.UseSqlServer(configuration["ConnectionStrings:Trades"]));
         services.AddScoped<ITradeRepository, TradeSqlRepository>();
         services.AddScoped<ISharePriceRepository, SharePriceSqlRepository>();
+        services.AddScoped<ICorrelationIdGenerator, CorrelationIdGenerator>();
 
         return services;
     }
