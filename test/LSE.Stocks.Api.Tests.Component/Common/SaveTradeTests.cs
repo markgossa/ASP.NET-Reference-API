@@ -30,10 +30,12 @@ public class SaveTradeTests : IClassFixture<ApiTestsContext>
         string tickerSymbol, decimal price, decimal count, string brokerId, string apiRoute)
     {
         var tradeRequest = new SaveTradeRequest(tickerSymbol, price, count, brokerId);
-        var response = await PostTradeAsync(tradeRequest, apiRoute);
+        var httpResponse = await PostTradeAsync(tradeRequest, apiRoute);
+        var tradeResponse = await DeserializeResponse(httpResponse);
 
+        Assert.Equal(HttpStatusCode.Created, httpResponse.StatusCode);
         AssertTradeSaved(tradeRequest);
-        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        AssertTradeResponseEqualToTradeRequest(tradeRequest, tradeResponse);
     }
 
     [Theory]
@@ -117,5 +119,19 @@ public class SaveTradeTests : IClassFixture<ApiTestsContext>
 
         AssertTradeNotSaved(tradeRequest);
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+    }
+
+    private static async Task<SaveTradeResponse?> DeserializeResponse(HttpResponseMessage httpResponse)
+    {
+        var json = await httpResponse.Content.ReadAsStringAsync();
+        return JsonSerializer.Deserialize<SaveTradeResponse>(json, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+    }
+
+    private static void AssertTradeResponseEqualToTradeRequest(SaveTradeRequest tradeRequest, SaveTradeResponse? tradeResponse)
+    {
+        Assert.Equal(tradeRequest.TickerSymbol, tradeResponse?.TickerSymbol);
+        Assert.Equal(tradeRequest.Price, tradeResponse?.Price);
+        Assert.Equal(tradeRequest.Count, tradeResponse?.Count);
+        Assert.Equal(tradeRequest.BrokerId, tradeResponse?.BrokerId);
     }
 }

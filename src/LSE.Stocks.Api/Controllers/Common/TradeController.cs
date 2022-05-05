@@ -20,15 +20,19 @@ public class TradeController : Controller
     /// Saves a trade of a share
     /// </summary>
     /// <param name="tradeRequest"></param>
-    /// <returns>Ok</returns>
-    /// <response code="200">Returns 200 if the trade was saved successfully</response>
-    /// <response code="400">Returns 400 if the request to save a trade was invalid</response>
+    /// <response code="201">Returns 201 CREATED if the trade was saved successfully</response>
+    /// <response code="400">Returns 400 BAD REQUEST if the request to save a trade was invalid</response>
     [HttpPost]
-    public async Task<ActionResult> SaveTrade([FromBody] SaveTradeRequest tradeRequest)
+    public async Task<ActionResult<SaveTradeResponse>> SaveTrade([FromBody] SaveTradeRequest tradeRequest)
     {
-        await _mediator.Send(new SaveTradeCommand(tradeRequest.TickerSymbol, tradeRequest.Price,
-            tradeRequest.Count, tradeRequest.BrokerId));
+        await _mediator.Send(MapToSaveTradeCommand(tradeRequest));
 
-        return Ok();
+        return Created(string.Empty, GenerateSaveTradeResponse(tradeRequest));
     }
+
+    private static SaveTradeCommand MapToSaveTradeCommand(SaveTradeRequest tradeRequest) 
+        => new (tradeRequest.TickerSymbol, tradeRequest.Price, tradeRequest.Count, tradeRequest.BrokerId);
+
+    private static SaveTradeResponse GenerateSaveTradeResponse(SaveTradeRequest tradeRequest) 
+        => new (tradeRequest.TickerSymbol, tradeRequest.Price, tradeRequest.Count, tradeRequest.BrokerId);
 }
