@@ -12,9 +12,9 @@ namespace LSE.Stocks.Api.Tests.Component.Common;
 
 public class SaveTradeTests : IClassFixture<ApiTestsContext>
 {
-    private const string _apiRoute = "trade";
-    private const string _apiRouteV1 = "v1/trade";
-    private const string _apiRouteV2 = "v2/trade";
+    private const string _apiRoute = "trades";
+    private const string _apiRouteV1 = "v1/trades";
+    private const string _apiRouteV2 = "v2/trades";
     private readonly ApiTestsContext _context;
 
     public SaveTradeTests(ApiTestsContext context) => _context = context;
