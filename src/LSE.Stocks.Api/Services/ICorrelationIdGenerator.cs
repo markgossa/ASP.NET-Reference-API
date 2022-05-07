@@ -1,7 +1,6 @@
-﻿namespace LSE.Stocks.Api.Services
+﻿namespace LSE.Stocks.Api.Services;
+
+public interface ICorrelationIdService
 {
-    public interface ICorrelationIdService
-    {
-        public string CorrelationId { get; }
-    }
+    public string CorrelationId { get; set; }
 }
