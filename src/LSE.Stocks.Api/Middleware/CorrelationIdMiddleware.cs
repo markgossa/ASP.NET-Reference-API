@@ -19,10 +19,18 @@ public class CorrelationIdMiddleware
         await _next(context);
     }
 
-    private static StringValues GetCorrelationId(HttpContext context, ICorrelationIdService correlationIdService) 
-        => context.Request.Headers.TryGetValue(_correlationIdHeader, out var correlationId)
-            ? correlationId
-            : correlationIdService.CorrelationId;
+    private static StringValues GetCorrelationId(HttpContext context, ICorrelationIdService correlationIdService)
+    {
+        if (context.Request.Headers.TryGetValue(_correlationIdHeader, out var correlationId))
+        {
+            correlationIdService.CorrelationId = correlationId;
+            return correlationId;
+        }
+        else
+        {
+            return correlationIdService.CorrelationId;
+        }
+    }
 
     private static void AddCorrelationIdHeaderToResponse(HttpContext context, StringValues correlationId) => context.Response.OnStarting(() =>
     {

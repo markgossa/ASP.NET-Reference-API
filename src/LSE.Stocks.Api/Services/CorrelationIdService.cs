@@ -2,5 +2,5 @@
 
 public class CorrelationIdService : ICorrelationIdService
 {
-    public string CorrelationId { get; } = Guid.NewGuid().ToString();
+    public string CorrelationId { get; set; } = Guid.NewGuid().ToString();
 }
