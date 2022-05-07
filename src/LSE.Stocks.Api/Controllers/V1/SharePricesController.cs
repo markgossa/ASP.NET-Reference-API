@@ -26,11 +26,11 @@ public class SharePricesController : Controller
     [HttpGet]
     public async Task<ActionResult<SharePriceResponse>> GetPrice([FromQuery] string tickerSymbol)
     {
-        var sharePriceQueryResponse = await _mediator.Send(new GetSharePriceQuery(tickerSymbol));
+        var sharePrice = await GetSharePriceAsync(tickerSymbol);
 
-        return new OkObjectResult(BuildSharePriceQueryResponse(sharePriceQueryResponse.SharePrice));
+        return new OkObjectResult(new SharePriceResponse(sharePrice.TickerSymbol, sharePrice.Price));
     }
 
-    private static SharePriceResponse BuildSharePriceQueryResponse(SharePrice sharePrice)
-        => new(sharePrice.TickerSymbol, sharePrice.Price);
+    private async Task<SharePrice> GetSharePriceAsync(string tickerSymbol)
+        => (await _mediator.Send(new GetSharePriceQuery(tickerSymbol))).SharePrice;
 }

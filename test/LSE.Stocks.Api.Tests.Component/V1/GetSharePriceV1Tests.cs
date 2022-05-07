@@ -10,6 +10,7 @@ public class GetSharePriceV1Tests : IClassFixture<ApiTestsContext>
 {
     private const string _apiRoute = "shareprices";
     private const string _apiRouteV1 = "v1/shareprices";
+    private const string _correlationIdHeader = "X-Correlation-Id";
     private readonly ApiTestsContext _context;
 
     public GetSharePriceV1Tests(ApiTestsContext context) => _context = context;
@@ -26,6 +27,33 @@ public class GetSharePriceV1Tests : IClassFixture<ApiTestsContext>
         Assert.Equal(expectedPrice, price?.Price);
         Assert.Equal(tickerSymbol, price?.TickerSymbol);
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+    }
+
+    [Theory]
+    [InlineData("NASDAQ:AAPL", _apiRoute)]
+    [InlineData("NASDAQ:TSLA", _apiRouteV1)]
+    public async Task GivenValidSharePriceRequest_WhenGetEndpointCalledWithNoCorrelationIdHeader_ThenReturnsNewCorrelationIdHeader(
+        string tickerSymbol, string apiRoute)
+    {
+        var response = await GetSharePriceAsync(tickerSymbol, apiRoute);
+        var price = await DeserializeResponseAsync(response);
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        AssertReturnsNewCorrelationId(response);
+    }
+
+    [Theory]
+    [InlineData("NASDAQ:AAPL", _apiRoute)]
+    [InlineData("NASDAQ:TSLA", _apiRouteV1)]
+    public async Task GivenValidSharePriceRequest_WhenGetEndpointCalledWithCorrelationIdHeader_ThenReturnsSameCorrelationIdHeader(
+        string tickerSymbol, string apiRoute)
+    {
+        var expectedCorrelationId = Guid.NewGuid().ToString();
+        var response = await GetSharePriceAsync(tickerSymbol, apiRoute, expectedCorrelationId);
+        var price = await DeserializeResponseAsync(response);
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        AssertSameCorrelationIdReturned(expectedCorrelationId, response);
     }
 
     [Theory]
@@ -84,6 +112,28 @@ public class GetSharePriceV1Tests : IClassFixture<ApiTestsContext>
             new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
     }
 
-    private async Task<HttpResponseMessage> GetSharePriceAsync(string tickerSymbol, string apiRoute)
-            => await _context.HttpClient.GetAsync($"{apiRoute}?tickerSymbol={tickerSymbol}");
+    private async Task<HttpResponseMessage> GetSharePriceAsync(string tickerSymbol, string apiRoute,
+        string? correlationId = null)
+    {
+        var httpRequest = new HttpRequestMessage(HttpMethod.Get, $"{apiRoute}?tickerSymbol={tickerSymbol}");
+
+        if (!string.IsNullOrWhiteSpace(correlationId))
+        {
+            httpRequest.Headers.Add(_correlationIdHeader, correlationId);
+        }
+
+        return await _context.HttpClient.SendAsync(httpRequest);
+    }
+
+    private void AssertReturnsNewCorrelationId(HttpResponseMessage response)
+    {
+        response.Headers.TryGetValues(_correlationIdHeader, out var correlationIdValues);
+        Assert.Equal(_context.CorrelationId.ToString(), correlationIdValues?.First());
+    }
+
+    private static void AssertSameCorrelationIdReturned(string expectedCorrelationId, HttpResponseMessage response)
+    {
+        response.Headers.TryGetValues(_correlationIdHeader, out var correlationIdValues);
+        Assert.Equal(expectedCorrelationId, correlationIdValues?.First());
+    }
 }

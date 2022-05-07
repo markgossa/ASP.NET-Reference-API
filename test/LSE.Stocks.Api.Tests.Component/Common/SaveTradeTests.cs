@@ -37,6 +37,21 @@ public class SaveTradeTests : IClassFixture<ApiTestsContext>
         AssertTradeSaved(tradeRequest);
         AssertTradeResponseEqualToTradeRequest(tradeRequest, tradeResponse);
     }
+    
+    [Theory]
+    [InlineData("NASDAQ:AAPL", 10, 1, "BR10834", _apiRoute)]
+    [InlineData("NASDAQ:AAPL", 10, 1, "CR4314", _apiRouteV1)]
+    [InlineData("NASDAQ:AAPL", 10, 1, "DR4314", _apiRouteV2)]
+    public async Task GivenValidTradeRequest_WhenPostEndpointCalledWithoutCorrelationIdHeader_ThenReturnsNewCorrelationIdHeader(
+        string tickerSymbol, decimal price, decimal count, string brokerId, string apiRoute)
+    {
+        var tradeRequest = new SaveTradeRequest(tickerSymbol, price, count, brokerId);
+        var httpResponse = await PostTradeAsync(tradeRequest, apiRoute);
+        var tradeResponse = await DeserializeResponse(httpResponse);
+
+        Assert.Equal(HttpStatusCode.Created, httpResponse.StatusCode);
+        AssertReturnsNewCorrelationId(httpResponse);
+    }
 
     [Theory]
     [InlineData("012345678901234567891", 10, 1, "BR10834", _apiRoute)]
@@ -97,14 +112,14 @@ public class SaveTradeTests : IClassFixture<ApiTestsContext>
             => await _context.HttpClient.PostAsync(apiRoute, BuildHttpContent(tradeRequest));
 
     private static StringContent BuildHttpContent(SaveTradeRequest tradeRequest)
-        => new(JsonSerializer.Serialize(tradeRequest), Encoding.UTF8, MediaTypeNames.Application.Json);
+        => new (JsonSerializer.Serialize(tradeRequest), Encoding.UTF8, MediaTypeNames.Application.Json);
 
     private void AssertTradeSaved(SaveTradeRequest tradeRequest)
             => _context.MockTradeRepository.Verify(m => m.SaveTradeAsync(MapToTrade(tradeRequest)),
                 Times.Once);
 
     private static Trade MapToTrade(SaveTradeRequest saveTradeRequest)
-        => new(saveTradeRequest.TickerSymbol, saveTradeRequest.Price,
+        => new (saveTradeRequest.TickerSymbol, saveTradeRequest.Price,
             saveTradeRequest.Count, saveTradeRequest.BrokerId);
 
     private void AssertTradeNotSaved(SaveTradeRequest tradeRequest)
@@ -133,5 +148,11 @@ public class SaveTradeTests : IClassFixture<ApiTestsContext>
         Assert.Equal(tradeRequest.Price, tradeResponse?.Price);
         Assert.Equal(tradeRequest.Count, tradeResponse?.Count);
         Assert.Equal(tradeRequest.BrokerId, tradeResponse?.BrokerId);
+    }
+
+    private void AssertReturnsNewCorrelationId(HttpResponseMessage response)
+    {
+        response.Headers.TryGetValues("X-Correlation-Id", out var correlationIdValues);
+        Assert.Equal(_context.CorrelationId.ToString(), correlationIdValues?.First());
     }
 }

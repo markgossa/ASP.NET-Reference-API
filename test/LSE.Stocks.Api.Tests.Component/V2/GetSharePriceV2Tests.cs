@@ -27,6 +27,18 @@ public class GetSharePriceV2Tests : IClassFixture<ApiTestsContext>
     }
 
     [Theory]
+    [InlineData("NASDAQ:AAPL", _apiRoute)]
+    public async Task GivenValidSharePriceRequest_WhenGetEndpointCalledWithNoCorrelationIdHeader_ThenReturnsNewCorrelationIdHeader(
+        string tickerSymbol, string apiRoute)
+    {
+        var response = await GetSharePriceAsync(tickerSymbol, apiRoute);
+        var price = await DeserializeResponseAsync(response);
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        AssertReturnsNewCorrelationId(response);
+    }
+
+    [Theory]
     [InlineData("NOTFOUND", _apiRoute)]
     public async Task GivenSharePriceRequestForInvalidShare_WhenGetEndpointCalled_ThenReturnsNotFound(
         string tickerSymbol, string apiRoute)
@@ -78,4 +90,10 @@ public class GetSharePriceV2Tests : IClassFixture<ApiTestsContext>
 
     private async Task<HttpResponseMessage> GetSharePriceAsync(string tickerSymbol, string apiRoute)
             => await _context.HttpClient.GetAsync($"{apiRoute}/{tickerSymbol}");
+
+    private void AssertReturnsNewCorrelationId(HttpResponseMessage response)
+    {
+        response.Headers.TryGetValues("X-Correlation-Id", out var correlationIdValues);
+        Assert.Equal(_context.CorrelationId.ToString(), correlationIdValues?.First());
+    }
 }

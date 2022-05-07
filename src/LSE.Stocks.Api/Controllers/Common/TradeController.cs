@@ -30,9 +30,9 @@ public class TradesController : Controller
         return Created(string.Empty, GenerateSaveTradeResponse(tradeRequest));
     }
 
-    private static SaveTradeCommand MapToSaveTradeCommand(SaveTradeRequest tradeRequest) 
-        => new (tradeRequest.TickerSymbol, tradeRequest.Price, tradeRequest.Count, tradeRequest.BrokerId);
+    private static SaveTradeCommand MapToSaveTradeCommand(SaveTradeRequest tradeRequest)
+        => new(tradeRequest.TickerSymbol, tradeRequest.Price, tradeRequest.Count, tradeRequest.BrokerId);
 
-    private static SaveTradeResponse GenerateSaveTradeResponse(SaveTradeRequest tradeRequest) 
-        => new (tradeRequest.TickerSymbol, tradeRequest.Price, tradeRequest.Count, tradeRequest.BrokerId);
+    private static SaveTradeResponse GenerateSaveTradeResponse(SaveTradeRequest tradeRequest)
+        => new(tradeRequest.TickerSymbol, tradeRequest.Price, tradeRequest.Count, tradeRequest.BrokerId);
 }
