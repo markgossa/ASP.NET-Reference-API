@@ -1,4 +1,4 @@
-﻿using LSE.Stocks.Api.Middleware;
+﻿using LSE.Stocks.Api.ApplicationBuilderExtensions;
 using LSE.Stocks.Api.ServiceCollectionExtensions;
 using LSE.Stocks.Api.Swagger;
 using Microsoft.AspNetCore.Builder;
@@ -53,7 +53,8 @@ public class Startup
         app.UseHttpsRedirection();
         app.UseRouting();
         app.UseAuthorization();
-        app.UseCustomExceptionHandler();
+        app.UseCustomExceptionHandlerMiddleware();
+        app.AddCorrelationIdMiddleware();
 
         app.UseEndpoints(endpoints => endpoints.MapControllers());
     }

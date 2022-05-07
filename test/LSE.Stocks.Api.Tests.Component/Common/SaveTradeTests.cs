@@ -151,5 +151,5 @@ public class SaveTradeTests : IClassFixture<ApiTestsContext>
     }
 
     private void AssertReturnsNewCorrelationId(HttpResponseMessage response)
-        => Assert.Equal(_context.CorrelationId.ToString(), response.Headers.First(h => h.Key == "Correlation-Id").Value.First());
+        => Assert.Equal(_context.CorrelationId.ToString(), response.Headers.First(h => h.Key == "X-Correlation-Id").Value.First());
 }

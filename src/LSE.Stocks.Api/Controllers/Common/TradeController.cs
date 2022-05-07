@@ -1,5 +1,4 @@
 ﻿using LSE.Stocks.Api.Models;
-using LSE.Stocks.Api.Services;
 using LSE.Stocks.Application.Services.Shares.Commands.SaveTrade;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -14,13 +13,8 @@ namespace LSE.Stocks.Api.Controllers.Common;
 public class TradesController : Controller
 {
     private readonly IMediator _mediator;
-    private readonly ICorrelationIdService _correlationIdService;
 
-    public TradesController(IMediator mediator, ICorrelationIdService correlationIdService)
-    {
-        _mediator = mediator;
-        _correlationIdService = correlationIdService;
-    }
+    public TradesController(IMediator mediator) => _mediator = mediator;
 
     /// <summary>
     /// Saves a trade of a share
@@ -32,17 +26,13 @@ public class TradesController : Controller
     public async Task<ActionResult<SaveTradeResponse>> SaveTrade([FromBody] SaveTradeRequest tradeRequest)
     {
         await _mediator.Send(MapToSaveTradeCommand(tradeRequest));
-        AddCorrelationIdHeader();
 
         return Created(string.Empty, GenerateSaveTradeResponse(tradeRequest));
     }
 
-    private static SaveTradeCommand MapToSaveTradeCommand(SaveTradeRequest tradeRequest) 
-        => new (tradeRequest.TickerSymbol, tradeRequest.Price, tradeRequest.Count, tradeRequest.BrokerId);
+    private static SaveTradeCommand MapToSaveTradeCommand(SaveTradeRequest tradeRequest)
+        => new(tradeRequest.TickerSymbol, tradeRequest.Price, tradeRequest.Count, tradeRequest.BrokerId);
 
-    private static SaveTradeResponse GenerateSaveTradeResponse(SaveTradeRequest tradeRequest) 
-        => new (tradeRequest.TickerSymbol, tradeRequest.Price, tradeRequest.Count, tradeRequest.BrokerId);
-
-    private void AddCorrelationIdHeader()
-        => Response.Headers.Add("Correlation-Id", new (_correlationIdService.CorrelationId));
+    private static SaveTradeResponse GenerateSaveTradeResponse(SaveTradeRequest tradeRequest)
+        => new(tradeRequest.TickerSymbol, tradeRequest.Price, tradeRequest.Count, tradeRequest.BrokerId);
 }

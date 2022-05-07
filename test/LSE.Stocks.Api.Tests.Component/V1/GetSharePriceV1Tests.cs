@@ -101,5 +101,5 @@ public class GetSharePriceV1Tests : IClassFixture<ApiTestsContext>
             => await _context.HttpClient.GetAsync($"{apiRoute}?tickerSymbol={tickerSymbol}");
 
     private void AssertReturnsNewCorrelationId(HttpResponseMessage response) 
-        => Assert.Equal(_context.CorrelationId.ToString(), response.Headers.First(h => h.Key == "Correlation-Id").Value.First());
+        => Assert.Equal(_context.CorrelationId.ToString(), response.Headers.First(h => h.Key == "X-Correlation-Id").Value.First());
 }
