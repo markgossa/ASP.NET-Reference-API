@@ -1,7 +1,6 @@
-﻿namespace LSE.Stocks.Api.Services
+﻿namespace LSE.Stocks.Api.Services;
+
+public class CorrelationIdService : ICorrelationIdService
 {
-    public class CorrelationIdService : ICorrelationIdService
-    {
-        public string CorrelationId { get; } = Guid.NewGuid().ToString();
-    }
+    public string CorrelationId { get; } = Guid.NewGuid().ToString();
 }
