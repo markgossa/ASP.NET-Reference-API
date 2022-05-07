@@ -93,7 +93,7 @@ public class GetSharePriceV2Tests : IClassFixture<ApiTestsContext>
 
     private void AssertReturnsNewCorrelationId(HttpResponseMessage response)
     {
-        response.Headers.TryGetValues("X-Correlation-Id", out var values);
-        Assert.Equal(_context.CorrelationId.ToString(), values?.First());
+        response.Headers.TryGetValues("X-Correlation-Id", out var correlationIdValues);
+        Assert.Equal(_context.CorrelationId.ToString(), correlationIdValues?.First());
     }
 }
