@@ -14,7 +14,7 @@ namespace LSE.Stocks.Api.Tests.Component
         public Mock<ITradeRepository> MockTradeRepository { get; } = new ();
         public HttpClient HttpClient { get; }
         private readonly Mock<ISharePriceRepository> _mockSharePriceRepository = new ();
-        private readonly Mock<ICorrelationIdService> _mockCorrelationIdGenerator = new ();
+        private readonly Mock<ICorrelationIdService> _mockCorrelationIdService = new ();
         public readonly string CorrelationId = Guid.NewGuid().ToString();
 
         public ApiTestsContext()
@@ -22,7 +22,7 @@ namespace LSE.Stocks.Api.Tests.Component
             HttpClient = CreateClient();
             SetUpMockSharePricingRepository();
             SetUpMockTradeRepository();
-            _mockCorrelationIdGenerator.Setup(m => m.CorrelationId).Returns(CorrelationId);
+            _mockCorrelationIdService.Setup(m => m.CorrelationId).Returns(CorrelationId);
         }
 
         private void SetUpMockSharePricingRepository()
@@ -54,7 +54,7 @@ namespace LSE.Stocks.Api.Tests.Component
             {
                 _ = ((ServiceCollection)services).AddSingleton(MockTradeRepository.Object);
                 _ = ((ServiceCollection)services).AddSingleton(_mockSharePriceRepository.Object);
-                _ = ((ServiceCollection)services).AddSingleton(_mockCorrelationIdGenerator.Object);
+                _ = ((ServiceCollection)services).AddSingleton(_mockCorrelationIdService.Object);
             });
 
         public new void Dispose()
