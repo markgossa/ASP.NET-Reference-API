@@ -24,12 +24,12 @@ public static class ServiceCollectionExtensions
         return services;
     }
 
-    public static IServiceCollection AddRepositories(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddServices(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddDbContext<TradesDbContext>(o => o.UseSqlServer(configuration["ConnectionStrings:Trades"]));
         services.AddScoped<ITradeRepository, TradeSqlRepository>();
         services.AddScoped<ISharePriceRepository, SharePriceSqlRepository>();
-        services.AddScoped<ICorrelationIdGenerator, CorrelationIdGenerator>();
+        services.AddScoped<ICorrelationIdService, CorrelationIdService>();
 
         return services;
     }

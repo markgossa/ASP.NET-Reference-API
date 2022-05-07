@@ -11,10 +11,10 @@ namespace LSE.Stocks.Api.Tests.Component
 {
     public class ApiTestsContext : WebApplicationFactory<Startup>, IDisposable
     {
-        public Mock<ITradeRepository> MockTradeRepository { get; } = new();
+        public Mock<ITradeRepository> MockTradeRepository { get; } = new ();
         public HttpClient HttpClient { get; }
-        private readonly Mock<ISharePriceRepository> _mockSharePriceRepository = new();
-        private readonly Mock<ICorrelationIdGenerator> _mockCorrelationIdGenerator = new();
+        private readonly Mock<ISharePriceRepository> _mockSharePriceRepository = new ();
+        private readonly Mock<ICorrelationIdService> _mockCorrelationIdGenerator = new ();
         public readonly string CorrelationId = Guid.NewGuid().ToString();
 
         public ApiTestsContext()
@@ -22,7 +22,7 @@ namespace LSE.Stocks.Api.Tests.Component
             HttpClient = CreateClient();
             SetUpMockSharePricingRepository();
             SetUpMockTradeRepository();
-            _mockCorrelationIdGenerator.Setup(m => m.Generate()).Returns(CorrelationId);
+            _mockCorrelationIdGenerator.Setup(m => m.CorrelationId).Returns(CorrelationId);
         }
 
         private void SetUpMockSharePricingRepository()
@@ -30,15 +30,15 @@ namespace LSE.Stocks.Api.Tests.Component
             _ = _mockSharePriceRepository.Setup(m => m.GetTradesAsync("NASDAQ:AAPL"))
                 .ReturnsAsync(new List<Trade>()
                     {
-                        new("NASDAQ:AAPL", 10, 2, null),
-                        new("NASDAQ:AAPL", 20, 4, null),
+                        new ("NASDAQ:AAPL", 10, 2, null),
+                        new ("NASDAQ:AAPL", 20, 4, null),
                     });
 
             _ = _mockSharePriceRepository.Setup(m => m.GetTradesAsync("NASDAQ:TSLA"))
                 .ReturnsAsync(new List<Trade>()
                     {
-                        new("NASDAQ:TSLA", 150, 2, null),
-                        new("NASDAQ:TSLA", 300, 4, null)
+                        new ("NASDAQ:TSLA", 150, 2, null),
+                        new ("NASDAQ:TSLA", 300, 4, null)
                     });
 
             _ = _mockSharePriceRepository.Setup(m => m.GetTradesAsync("NASDAQ:ERROR"))

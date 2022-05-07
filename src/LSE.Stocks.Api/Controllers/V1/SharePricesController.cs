@@ -14,12 +14,12 @@ namespace LSE.Stocks.Api.Controllers.V1;
 public class SharePricesController : Controller
 {
     private readonly IMediator _mediator;
-    private readonly ICorrelationIdGenerator _correlationIdGenerator;
+    private readonly ICorrelationIdService _correlationIdService;
 
-    public SharePricesController(IMediator mediator, ICorrelationIdGenerator correlationIdGEnerator)
+    public SharePricesController(IMediator mediator, ICorrelationIdService correlationIdService)
     {
         _mediator = mediator;
-        _correlationIdGenerator = correlationIdGEnerator;
+        _correlationIdService = correlationIdService;
     }
 
     /// <summary>
@@ -39,8 +39,8 @@ public class SharePricesController : Controller
     }
 
     private void AddCorrelationIdHeader() 
-        => Response.Headers.Add("Correlation-Id", new(_correlationIdGenerator.Generate()));
+        => Response.Headers.Add("Correlation-Id", new (_correlationIdService.CorrelationId));
 
     private static SharePriceResponse BuildSharePriceQueryResponse(SharePrice sharePrice)
-        => new(sharePrice.TickerSymbol, sharePrice.Price);
+        => new (sharePrice.TickerSymbol, sharePrice.Price);
 }

@@ -1,7 +1,7 @@
 ﻿namespace LSE.Stocks.Api.Services
 {
-    public class CorrelationIdGenerator : ICorrelationIdGenerator
+    public class CorrelationIdService : ICorrelationIdService
     {
-        public string Generate() => Guid.NewGuid().ToString();
+        public string CorrelationId { get; } = Guid.NewGuid().ToString();
     }
 }
