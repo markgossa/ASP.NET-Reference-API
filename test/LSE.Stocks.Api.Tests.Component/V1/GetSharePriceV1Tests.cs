@@ -31,7 +31,7 @@ public class GetSharePriceV1Tests : IClassFixture<ApiTestsContext>
     [Theory]
     [InlineData("NASDAQ:AAPL", _apiRoute)]
     [InlineData("NASDAQ:TSLA", _apiRouteV1)]
-    public async Task GivenValidSharePriceRequest_WhenGetEndpointCalled_ThenReturnsNewCorrelationIdHeader(
+    public async Task GivenValidSharePriceRequest_WhenGetEndpointCalledWithNoCorrelationIdHeader_ThenReturnsNewCorrelationIdHeader(
         string tickerSymbol, string apiRoute)
     {
         var response = await GetSharePriceAsync(tickerSymbol, apiRoute);
@@ -40,7 +40,7 @@ public class GetSharePriceV1Tests : IClassFixture<ApiTestsContext>
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         AssertReturnsNewCorrelationId(response);
     }
-
+    
     [Theory]
     [InlineData("NOTFOUND", _apiRoute)]
     [InlineData("NOTFOUND", _apiRouteV1)]

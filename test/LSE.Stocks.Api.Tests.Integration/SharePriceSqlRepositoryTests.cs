@@ -35,23 +35,23 @@ namespace LSE.Stocks.Api.Tests.Integration
         }
 
         private static List<TradeRow> BuildTrades()
-            => new()
+            => new ()
             {
-                new TradeRow
+                new ()
                 {
                     TickerSymbol = "MSFT",
                     Price = 7.5m,
                     Count = 7,
                     BrokerId = Guid.NewGuid().ToString()
                 },
-                new TradeRow
+                new ()
                 {
                     TickerSymbol = "MSFT",
                     Price = 8m,
                     Count = 5,
                     BrokerId = Guid.NewGuid().ToString()
                 },
-                new TradeRow
+                new ()
                 {
                     TickerSymbol = "APPL",
                     Price = 5.5m,
@@ -65,8 +65,8 @@ namespace LSE.Stocks.Api.Tests.Integration
         private async Task<IEnumerable<Trade>> GetTradesFromSharePriceSqlRepositoryAsync(string tickerSymbol)
         {
             var sut = new SharePriceSqlRepository(_tradesDbContext!, new Mock<ILogger<SharePriceSqlRepository>>().Object);
-            var actualTrades = await sut.GetTradesAsync(tickerSymbol);
-            return actualTrades;
+         
+            return await sut.GetTradesAsync(tickerSymbol);
         }
 
         private void AssertCorrectTradeDetailsReturned(string tickerSymbol, IEnumerable<Trade> actualTrades)
