@@ -29,7 +29,7 @@ public class SaveTradeTests : IClassFixture<ApiTestsContext>
     public async Task GivenValidTradeRequest_WhenPostEndpointCalled_ThenSavesTradeAndReturnsOK(
         string tickerSymbol, decimal price, decimal count, string brokerId, string apiRoute)
     {
-        var tradeRequest = new SaveTradeRequest(tickerSymbol, price, count, brokerId);
+        var tradeRequest = new TradeRequest(tickerSymbol, price, count, brokerId);
         var httpResponse = await PostTradeAsync(tradeRequest, apiRoute);
         var tradeResponse = await DeserializeResponse(httpResponse);
 
@@ -45,7 +45,7 @@ public class SaveTradeTests : IClassFixture<ApiTestsContext>
     public async Task GivenValidTradeRequest_WhenPostEndpointCalledWithoutCorrelationIdHeader_ThenReturnsNewCorrelationIdHeader(
         string tickerSymbol, decimal price, decimal count, string brokerId, string apiRoute)
     {
-        var tradeRequest = new SaveTradeRequest(tickerSymbol, price, count, brokerId);
+        var tradeRequest = new TradeRequest(tickerSymbol, price, count, brokerId);
         var httpResponse = await PostTradeAsync(tradeRequest, apiRoute);
         var tradeResponse = await DeserializeResponse(httpResponse);
 
@@ -101,35 +101,35 @@ public class SaveTradeTests : IClassFixture<ApiTestsContext>
     public async Task GivenValidTradeRequest_WhenPostEndpointCalledAndAnErrorOccurs_ThenDoesAddNotTradeAndReturnsInternalServerError(
         string tickerSymbol, decimal price, decimal count, string brokerId, string apiRoute)
     {
-        var saveTradeRequest = new SaveTradeRequest(tickerSymbol, price, count, brokerId);
-        var response = await PostTradeAsync(saveTradeRequest, apiRoute);
+        var tradeRequest = new TradeRequest(tickerSymbol, price, count, brokerId);
+        var response = await PostTradeAsync(tradeRequest, apiRoute);
 
-        AssertTradeSaved(saveTradeRequest);
+        AssertTradeSaved(tradeRequest);
         Assert.Equal(HttpStatusCode.InternalServerError, response.StatusCode);
     }
 
-    private async Task<HttpResponseMessage> PostTradeAsync(SaveTradeRequest tradeRequest, string apiRoute)
+    private async Task<HttpResponseMessage> PostTradeAsync(TradeRequest tradeRequest, string apiRoute)
             => await _context.HttpClient.PostAsync(apiRoute, BuildHttpContent(tradeRequest));
 
-    private static StringContent BuildHttpContent(SaveTradeRequest tradeRequest)
+    private static StringContent BuildHttpContent(TradeRequest tradeRequest)
         => new (JsonSerializer.Serialize(tradeRequest), Encoding.UTF8, MediaTypeNames.Application.Json);
 
-    private void AssertTradeSaved(SaveTradeRequest tradeRequest)
+    private void AssertTradeSaved(TradeRequest tradeRequest)
             => _context.MockTradeRepository.Verify(m => m.SaveTradeAsync(MapToTrade(tradeRequest)),
                 Times.Once);
 
-    private static Trade MapToTrade(SaveTradeRequest saveTradeRequest)
-        => new (saveTradeRequest.TickerSymbol, saveTradeRequest.Price,
-            saveTradeRequest.Count, saveTradeRequest.BrokerId);
+    private static Trade MapToTrade(TradeRequest tradeRequest)
+        => new (tradeRequest.TickerSymbol, tradeRequest.Price,
+            tradeRequest.Count, tradeRequest.BrokerId);
 
-    private void AssertTradeNotSaved(SaveTradeRequest tradeRequest)
+    private void AssertTradeNotSaved(TradeRequest tradeRequest)
             => _context.MockTradeRepository.Verify(m => m.SaveTradeAsync(MapToTrade(tradeRequest)),
                 Times.Never);
 
     private async Task PostTradeAndAssertNotSavedAndBadRequest(string tickerSymbol, decimal price, decimal count, string brokerId,
         string apiRoute)
     {
-        var tradeRequest = new SaveTradeRequest(tickerSymbol, price, count, brokerId);
+        var tradeRequest = new TradeRequest(tickerSymbol, price, count, brokerId);
         var response = await PostTradeAsync(tradeRequest, apiRoute);
 
         AssertTradeNotSaved(tradeRequest);
@@ -142,7 +142,7 @@ public class SaveTradeTests : IClassFixture<ApiTestsContext>
         return JsonSerializer.Deserialize<SaveTradeResponse>(json, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
     }
 
-    private static void AssertTradeResponseEqualToTradeRequest(SaveTradeRequest tradeRequest, SaveTradeResponse? tradeResponse)
+    private static void AssertTradeResponseEqualToTradeRequest(TradeRequest tradeRequest, SaveTradeResponse? tradeResponse)
     {
         Assert.Equal(tradeRequest.TickerSymbol, tradeResponse?.TickerSymbol);
         Assert.Equal(tradeRequest.Price, tradeResponse?.Price);
