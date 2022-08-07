@@ -2,6 +2,7 @@
 using LSE.Stocks.Application.Services.Shares.Commands.SaveTrade;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using System.Net.Mime;
 
 namespace LSE.Stocks.Api.Controllers.Common;
 
@@ -10,6 +11,8 @@ namespace LSE.Stocks.Api.Controllers.Common;
 [Route("[controller]")]
 [Route("v{version:apiVersion}/[controller]")]
 [ApiController]
+[Produces(MediaTypeNames.Application.Json)]
+[Consumes(MediaTypeNames.Application.Json)]
 public class TradesController : Controller
 {
     private readonly IMediator _mediator;

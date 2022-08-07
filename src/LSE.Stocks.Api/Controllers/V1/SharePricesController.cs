@@ -3,6 +3,7 @@ using LSE.Stocks.Application.Services.Shares.Queries.GetSharePrice;
 using LSE.Stocks.Domain.Models.Shares;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using System.Net.Mime;
 
 namespace LSE.Stocks.Api.Controllers.V1;
 
@@ -10,6 +11,8 @@ namespace LSE.Stocks.Api.Controllers.V1;
 [Route("SharePrices")]
 [Route("v{version:apiVersion}/SharePrices")]
 [ApiController]
+[Produces(MediaTypeNames.Application.Json)]
+[Consumes(MediaTypeNames.Application.Json)]
 public class SharePricesController : Controller
 {
     private readonly IMediator _mediator;
