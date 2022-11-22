@@ -2,23 +2,20 @@
 using LSE.Stocks.Domain.Models.Shares;
 using LSE.Stocks.Infrastructure.Models;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 
 namespace LSE.Stocks.Infrastructure;
 
 public class SharePriceSqlRepository : ISharePriceRepository, IDisposable, IAsyncDisposable
 {
     private TradesDbContext? _dbContext;
-    private readonly ILogger<SharePriceSqlRepository> _logger;
     private bool _disposedValue;
 
-    public SharePriceSqlRepository(TradesDbContext dbContext, ILogger<SharePriceSqlRepository> logger)
+    public SharePriceSqlRepository(TradesDbContext dbContext)
     {
         _dbContext = dbContext;
-        _logger = logger;
     }
 
-    public Task<IEnumerable<Trade>> GetTradesAsync(string tickerSymbol)
+    public Task<IEnumerable<Trade>> Trades(string tickerSymbol)
     {
         try
         {
@@ -30,8 +27,6 @@ public class SharePriceSqlRepository : ISharePriceRepository, IDisposable, IAsyn
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error retrieving trades from database");
-
             throw;
         }
     }

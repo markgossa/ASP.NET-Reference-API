@@ -27,21 +27,21 @@ public class ApiTestsContext : WebApplicationFactory<Startup>, IDisposable
 
     private void SetUpMockSharePricingRepository()
     {
-        _ = _mockSharePriceRepository.Setup(m => m.GetTradesAsync("NASDAQ:AAPL"))
+        _ = _mockSharePriceRepository.Setup(m => m.Trades("NASDAQ:AAPL"))
             .ReturnsAsync(new List<Trade>()
                 {
                     new ("NASDAQ:AAPL", 10, 2, null),
                     new ("NASDAQ:AAPL", 20, 4, null),
                 });
 
-        _ = _mockSharePriceRepository.Setup(m => m.GetTradesAsync("NASDAQ:TSLA"))
+        _ = _mockSharePriceRepository.Setup(m => m.Trades("NASDAQ:TSLA"))
             .ReturnsAsync(new List<Trade>()
                 {
                     new ("NASDAQ:TSLA", 150, 2, null),
                     new ("NASDAQ:TSLA", 300, 4, null)
                 });
 
-        _ = _mockSharePriceRepository.Setup(m => m.GetTradesAsync("NASDAQ:ERROR"))
+        _ = _mockSharePriceRepository.Setup(m => m.Trades("NASDAQ:ERROR"))
             .Throws(new Exception("Something bad happened"));
     }
 

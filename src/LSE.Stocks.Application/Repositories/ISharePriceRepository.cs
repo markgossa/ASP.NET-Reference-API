@@ -4,5 +4,5 @@ namespace LSE.Stocks.Application.Repositories;
 
 public interface ISharePriceRepository
 {
-    Task<IEnumerable<Trade>> GetTradesAsync(string tickerSymbol);
+    Task<IEnumerable<Trade>> Trades(string tickerSymbol);
 }

@@ -64,9 +64,9 @@ namespace LSE.Stocks.Api.Tests.Integration
 
         private async Task<IEnumerable<Trade>> GetTradesFromSharePriceSqlRepositoryAsync(string tickerSymbol)
         {
-            var sut = new SharePriceSqlRepository(_tradesDbContext!, new Mock<ILogger<SharePriceSqlRepository>>().Object);
+            var sut = new SharePriceSqlRepository(_tradesDbContext!);
          
-            return await sut.GetTradesAsync(tickerSymbol);
+            return await sut.Trades(tickerSymbol);
         }
 
         private void AssertCorrectTradeDetailsReturned(string tickerSymbol, IEnumerable<Trade> actualTrades)
